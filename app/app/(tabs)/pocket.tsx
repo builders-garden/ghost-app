@@ -102,22 +102,6 @@ export default function Pocket() {
             <Icon source="chevron-right" size={16} color="#C9B3F9" />
           </View>
         </View>
-        {/* <View className="flex-grow" /> */}
-        {/* <View className="flex flex-row justify-between mt-2 mb-4">
-          <Text className="max-w-[300px] text-white">
-            Set aside the remainder of each purchase rounded to the nearest
-            dollar (if you pay $1.30 set aside $0.70). This is enabled by
-            default.
-          </Text>
-          <Switch
-            trackColor={{ false: "black", true: "#C9B3F9" }}
-            thumbColor={"#201F2D"}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-            disabled
-          />
-        </View> */}
         <View className="my-8 flex items-center w-full">
           <View className="px-14">
             <View className="flex flex-col space-y-4 pb-8 pt-4">
@@ -141,37 +125,6 @@ export default function Pocket() {
             />
           </View>
         </View>
-        {/* <View className="p-14">
-          <ImageBackground
-            source={require("../../../images/ghost.png")}
-            className="flex flex-col space-y-4 py-8 bg-opacity-20"
-            imageStyle={{ opacity: 0.1 }}
-          >
-            <Text className="text-white font-semibold text-center">
-              Your balance
-            </Text>
-            <Text className="text-white font-bold text-center text-5xl">
-              $83.00
-            </Text>
-            <View className="flex flex-row justify-evenly items-center">
-              <CircularButton
-                text="Deposit"
-                icon="credit-card-alt"
-                onPress={() => router.push("/app/add-money-modal")}
-              />
-              <CircularButton
-                text="Withdraw"
-                icon="download"
-                onPress={() => {}}
-              />
-              <CircularButton
-                text="Borrow"
-                icon="money"
-                onPress={() => router.push("/app/borrow-modal")}
-              />
-            </View>
-          </ImageBackground>
-        </View> */}
       </View>
     </>
   );

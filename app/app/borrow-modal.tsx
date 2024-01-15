@@ -13,7 +13,6 @@ import {
   GHO_ASSET_PRICE,
   GHO_SEPOLIA_ADDRESS,
 } from "../../constants/sepolia";
-import { formatUnits } from "ethers/lib/utils";
 import AppButton from "../../components/app-button";
 import { doc, setDoc } from "firebase/firestore";
 import { firebaseFirestore } from "../../firebaseConfig";
@@ -122,7 +121,7 @@ export default function BorrowModal() {
         </View>
       ) : (
         <View>
-          <Text className="text-[#53516C] font-semibold mt-8">
+          {/* <Text className="text-[#53516C] font-semibold mt-8">
             Total collateral base (USD)
           </Text>
           <Text className="text-white font-semibold mt-2">
@@ -132,22 +131,11 @@ export default function BorrowModal() {
                   2
                 )
               : "0.00"}
-          </Text>
+          </Text> */}
           <Text className="text-[#53516C] font-semibold mt-4">
-            Total debt (USD)
+            Borrowable GHO
           </Text>
-          <Text className="text-white font-semibold mt-2">
-            $
-            {userData[1]
-              ? parseFloat(userData[1].div(GHO_ASSET_PRICE).toString()).toFixed(
-                  2
-                )
-              : "0.00"}
-          </Text>
-          <Text className="text-[#53516C] font-semibold mt-4">
-            Available GHO to borrow
-          </Text>
-          <Text className="text-white font-semibold mt-2">
+          <Text className="text-white font-semibold mt-1 text-lg">
             {userData[2]
               ? parseFloat(userData[2].div(GHO_ASSET_PRICE).toString()).toFixed(
                   2
@@ -155,7 +143,7 @@ export default function BorrowModal() {
               : "0.00"}{" "}
             GHO
           </Text>
-          <Text className="text-[#53516C] font-semibold mt-4">
+          {/* <Text className="text-[#53516C] font-semibold mt-4">
             Maximum LTV (loan-to-value)
           </Text>
           <Text className="text-white font-semibold mt-2">
@@ -166,7 +154,7 @@ export default function BorrowModal() {
           </Text>
           <Text className="text-white font-semibold mt-2">
             {parseFloat(formatUnits(userData[5], 18)).toFixed(2)}%
-          </Text>
+          </Text> */}
           {/* <Slider progress={progress} minimumValue={min} maximumValue={max} /> */}
           <View className="mt-4">
             {borrowLoading ? (
@@ -185,6 +173,17 @@ export default function BorrowModal() {
               />
             )}
           </View>
+          <Text className="text-[#53516C] font-semibold mt-4">
+            Amount borrowed
+          </Text>
+          <Text className="text-white font-semibold mt-1 text-lg">
+            {userData[1]
+              ? parseFloat(userData[1].div(GHO_ASSET_PRICE).toString()).toFixed(
+                  2
+                )
+              : "0.00"}{" "}
+            GHO
+          </Text>
           <View className="mt-4">
             {repayLoading ? (
               <ActivityIndicator animating={true} color={"#C9B3F9"} />
