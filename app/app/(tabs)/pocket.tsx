@@ -44,7 +44,7 @@ export default function Pocket() {
         <Text className="text-white text-justify text-lg leading-5">
           Welcome to your <Text className="font-bold">GHOst pocket</Text>! Here
           you can deposit your GHO tokens into a vault or as a liquidity
-          provider to start earn some interest!
+          provider to start earning some interest!
         </Text>
         <View className="px-14">
           <View className="flex flex-col space-y-4 pb-8 pt-4">
