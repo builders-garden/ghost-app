@@ -2,7 +2,7 @@ import { providers } from "ethers";
 
 export interface DBUser {
   address: string;
-  smartWalletAddress: string;
+  // smartWalletAddress: string;
   createdAt: string;
   rounding: boolean;
   username: string;
@@ -13,6 +13,8 @@ export interface DBTransaction {
   from: string;
   fromUsername: string;
   to: string;
+  toUsername: string;
   amount: string;
   createdAt: string;
+  txHash: string;
 }

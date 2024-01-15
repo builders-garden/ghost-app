@@ -6,11 +6,9 @@ import { useSendStore, useUserStore } from "../../store";
 import * as Clipboard from "expo-clipboard";
 import { useState } from "react";
 import {
-  Web3Button,
   shortenAddress,
   useContract,
   useContractRead,
-  useSDK,
   useTransferToken,
 } from "@thirdweb-dev/react-native";
 import { GHO_SEPOLIA_ADDRESS } from "../../constants/sepolia";
@@ -18,24 +16,24 @@ import { BigNumber } from "ethers";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { doc, setDoc } from "firebase/firestore";
 import { firebaseFirestore } from "../../firebaseConfig";
+import AppButton from "../../components/app-button";
 
 export default function SendModal() {
   const [copied, setCopied] = useState(false);
   const isPresented = router.canGoBack();
   const sendUser = useSendStore((state) => state.user);
   const setSendUser = useSendStore((state) => state.setSendUser);
+  const user = useUserStore((state) => state.user);
   const { contract } = useContract(GHO_SEPOLIA_ADDRESS);
   const { mutateAsync: transfer, isLoading: transferLoading } =
     useTransferToken(contract);
-  const user = useUserStore((state) => state.user);
-  const sdk = useSDK();
   const [amount, setAmount] = useState("0");
   const [loading, setLoading] = useState(false);
-  const {
-    data: balanceData,
-    isLoading: balanceOfLoading,
-    error,
-  } = useContractRead(contract, "balanceOf", [user?.smartWalletAddress]);
+  const { data: balanceData, isLoading: balanceOfLoading } = useContractRead(
+    contract,
+    "balanceOf",
+    [user?.address]
+  );
   const balance = balanceData
     ? (balanceData as BigNumber)
         .div(BigNumber.from(10).pow(18))
@@ -49,26 +47,17 @@ export default function SendModal() {
     if (transferLoading || loading || !sendUser) return;
     setLoading(true);
     try {
-      const amountToTransfer = BigNumber.from(amount).mul(
-        BigNumber.from(10).pow(18)
-      );
-      console.log(user, [sendUser!.smartWalletAddress, amountToTransfer]);
-      const { receipt } = await transfer(
-        {
-          to: sendUser!.smartWalletAddress,
-          amount: amount,
-        },
-        {
-          onError: (error) => {
-            console.error(error);
-          },
-        }
-      );
+      const { receipt } = await transfer({
+        to: sendUser!.address,
+        amount,
+      });
       const transaction = {
-        receipt,
-        from: user?.smartWalletAddress,
-        fromUsername: sendUser.username,
-        to: sendUser.smartWalletAddress,
+        txHash: receipt.transactionHash,
+        blockNumber: receipt.blockNumber,
+        from: user?.address,
+        fromUsername: user?.username,
+        to: sendUser.address,
+        toUsername: sendUser?.username,
         amount,
         createdAt: new Date().toISOString(),
       };
@@ -117,11 +106,11 @@ export default function SendModal() {
       {/* <Text className="text-white font-semibold mt-2">{sendUser?.address}</Text> */}
       <View className="bg-[#292836] rounded-lg flex flex-row justify-between mt-4 px-4 py-2">
         <Text className="text-[#53516C] text-ellipsis">
-          {shortenAddress(sendUser?.smartWalletAddress, false)}
+          {shortenAddress(sendUser?.address, false)}
         </Text>
         <Pressable
           onPress={async () => {
-            await Clipboard.setStringAsync(sendUser?.smartWalletAddress);
+            await Clipboard.setStringAsync(sendUser?.address);
             setCopied(true);
           }}
         >
@@ -169,19 +158,19 @@ export default function SendModal() {
         {transferLoading || loading ? (
           <ActivityIndicator animating={true} color={"#C9B3F9"} />
         ) : (
-          // <AppButton
-          //   text="Send"
-          //   onPress={() => sendTokens()}
-          //   variant={canSend ? "primary" : "disabled"}
-          // />
-          <Web3Button
-            contractAddress={GHO_SEPOLIA_ADDRESS}
-            action={(contract) =>
-              contract.erc20.transfer(sendUser!.smartWalletAddress, amount)
-            }
-          >
-            Send
-          </Web3Button>
+          <AppButton
+            text="Send"
+            onPress={() => sendTokens()}
+            variant={canSend ? "primary" : "disabled"}
+          />
+          // <Web3Button
+          //   contractAddress={GHO_SEPOLIA_ADDRESS}
+          //   action={(contract) =>
+          //     contract.erc20.transfer(sendUser!.smartWalletAddress, amount)
+          //   }
+          // >
+          //   Send
+          // </Web3Button>
         )}
       </SafeAreaView>
     </View>

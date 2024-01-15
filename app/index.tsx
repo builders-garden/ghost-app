@@ -47,13 +47,11 @@ const Home = () => {
       doc(firebaseFirestore, "users", firebaseAuth.currentUser!.uid)
     );
     if (document.exists()) {
-      const { address, createdAt, username, smartWalletAddress, rounding } =
-        document.data();
+      const { address, createdAt, username, rounding } = document.data();
       const user = {
         address,
         createdAt,
         username,
-        smartWalletAddress,
         rounding,
       };
       setUser(user);

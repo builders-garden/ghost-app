@@ -16,7 +16,7 @@ export default function AddMoneyModal() {
   useEffect(() => {
     if (user) {
       RNQRGenerator.generate({
-        value: user?.smartWalletAddress,
+        value: user?.address,
         height: 400,
         width: 400,
         correctionLevel: "H",
@@ -57,12 +57,10 @@ export default function AddMoneyModal() {
         Send GHO, USDC, USDT or DAI to your address below.
       </Text>
       <View className="bg-[#292836] rounded-lg flex flex-row justify-between mt-4 px-4 py-2">
-        <Text className="text-[#53516C] text-ellipsis">
-          {user?.smartWalletAddress}
-        </Text>
+        <Text className="text-[#53516C] text-ellipsis">{user?.address}</Text>
         <Pressable
           onPress={async () => {
-            await Clipboard.setStringAsync(user!.smartWalletAddress);
+            await Clipboard.setStringAsync(user!.address);
             setCopied(true);
           }}
         >

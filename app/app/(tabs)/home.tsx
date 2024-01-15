@@ -6,7 +6,7 @@ import {
   useContractRead,
 } from "@thirdweb-dev/react-native";
 import { Redirect } from "expo-router";
-import { SafeAreaView, View, Text, ScrollView } from "react-native";
+import { SafeAreaView, View, Text, ScrollView, Pressable } from "react-native";
 import {
   ActivityIndicator,
   Divider,
@@ -19,11 +19,13 @@ import LogoutModal from "../../../components/modals/logout-modal";
 import { router } from "expo-router";
 import { useUserStore } from "../../../store";
 import { BigNumber } from "ethers";
-import { GHO_SEPOLIA_ADDRESS } from "../../../constants/sepolia";
+import { GHO_SEPOLIA_ADDRESS, sepolia } from "../../../constants/sepolia";
 import { useTransactionsStore } from "../../../store/use-transactions-store";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { firebaseFirestore } from "../../../firebaseConfig";
 import { DBTransaction } from "../../../store/interfaces";
+import TimeAgo from "@andordavoti/react-native-timeago";
+import * as WebBrowser from "expo-web-browser";
 
 export default function Home() {
   const signer = useConnectedWallet();
@@ -37,12 +39,11 @@ export default function Home() {
     isLoading: balanceOfLoading,
     error,
     refetch: balanceRefetch,
-  } = useContractRead(contract, "balanceOf", [user?.smartWalletAddress]);
+  } = useContractRead(contract, "balanceOf", [user?.address]);
   const transactions = useTransactionsStore((state) => state.transactions);
   const setTransactions = useTransactionsStore(
     (state) => state.setTransactions
   );
-  console.log(balanceData);
   const balance = balanceData
     ? (balanceData as BigNumber)
         .div(BigNumber.from(10).pow(18))
@@ -52,6 +53,7 @@ export default function Home() {
 
   const onRefresh = async () => {
     setRefreshing(true);
+    setTransactions([]);
     try {
       await Promise.all([balanceRefetch(), fetchTransactions()]);
     } catch (error) {
@@ -70,11 +72,11 @@ export default function Home() {
     try {
       const toQ = query(
         collection(firebaseFirestore, "transactions"),
-        where("to", "==", user?.smartWalletAddress)
+        where("to", "==", user?.address)
       );
       const fromQ = query(
         collection(firebaseFirestore, "transactions"),
-        where("from", "==", user?.smartWalletAddress)
+        where("from", "==", user?.address)
       );
 
       const [toSnapshot, fromSnapshot] = await Promise.all([
@@ -157,7 +159,7 @@ export default function Home() {
           Transaction History
         </Text>
         <Divider />
-        {refreshing && (
+        {refreshing && transactions.length === 0 && (
           <View className="mt-4">
             <ActivityIndicator animating={true} color={"#C9B3F9"} />
           </View>
@@ -168,42 +170,53 @@ export default function Home() {
           </Text>
         )}
         {transactions.length > 0 && (
-          <ScrollView>
+          <ScrollView className="h-full">
             {transactions.map((transaction, index) => {
-              const { to, createdAt } = transaction;
+              const { from, toUsername, fromUsername, createdAt, txHash } =
+                transaction;
               const amount = parseFloat(transaction.amount);
+              const isFrom = from === user?.address;
               return (
-                <>
-                  <View
-                    className="flex flex-row items-center justify-between py-4"
-                    key={`event-${index}`}
-                  >
+                <Pressable
+                  key={`event-${index}`}
+                  onPress={async () => {
+                    await WebBrowser.openBrowserAsync(
+                      `${sepolia.explorers[0].url}/tx/${txHash}`
+                    );
+                  }}
+                >
+                  <View className="flex flex-row items-center justify-between py-4">
                     <View className="flex flex-row items-center space-x-4">
                       <Avatar
-                        name={transaction.fromUsername.charAt(0).toUpperCase()}
+                        name={(isFrom ? toUsername : fromUsername)
+                          .charAt(0)
+                          .toUpperCase()}
                       />
-                      <Text className="text-white font-semibold text-lg">
-                        {transaction.fromUsername}
-                      </Text>
+                      <View className="flex flex-col">
+                        <Text className="text-white font-semibold text-lg">
+                          {isFrom ? toUsername : fromUsername}
+                        </Text>
+
+                        <Text className="text-[#53516C]">
+                          Click to view detail
+                        </Text>
+                      </View>
                     </View>
-                    <View className="flex flex-col items-end justify-center space-y-1">
+                    <View className="flex flex-col items-end justify-center">
                       <Text
                         className={`${
-                          to === user?.smartWalletAddress
-                            ? "text-emerald-500"
-                            : "text-red-500"
-                        } font-semibold`}
+                          !isFrom ? "text-emerald-500" : "text-red-500"
+                        } font-semibold text-lg`}
                       >
-                        {to === user?.smartWalletAddress ? "+" : "-"} $
-                        {amount.toFixed(2)}
+                        {!isFrom ? "+" : "-"} ${amount.toFixed(2)}
                       </Text>
-                      <Text className="text-xs text-[#53516C]">
-                        {createdAt}
+                      <Text className="text-[#53516C]">
+                        <TimeAgo dateTo={new Date(createdAt)} />
                       </Text>
                     </View>
                   </View>
                   <Divider />
-                </>
+                </Pressable>
               );
             })}
           </ScrollView>

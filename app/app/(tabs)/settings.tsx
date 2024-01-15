@@ -58,7 +58,7 @@ export default function Settings() {
             text="VIEW ACCOUNT ON EXPLORER"
             onPress={async () => {
               await WebBrowser.openBrowserAsync(
-                `${sepolia.explorers[0].url}/address/${user?.smartWalletAddress}`
+                `${sepolia.explorers[0].url}/address/${user?.address}`
               );
             }}
             variant="ghost"
