@@ -111,7 +111,7 @@ export default function BorrowModal() {
           size={20}
         />
       </Appbar.Header>
-      <Text className="text-white font-semibold mt-2">
+      <Text className="text-white font-semibold mt-2 text-lg">
         Here you can borrow GHO using the collateral that was automatically
         deposited by GHOst.
       </Text>

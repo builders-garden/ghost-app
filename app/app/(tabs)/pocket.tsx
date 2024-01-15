@@ -41,7 +41,7 @@ export default function Pocket() {
         />
       </Appbar.Header>
       <View className="flex-1 flex-col w-full px-4 bg-[#201F2D]">
-        <Text className="text-white text-justify">
+        <Text className="text-white text-justify text-lg leading-5">
           Welcome to your <Text className="font-bold">GHOst pocket</Text>! Here
           you can deposit your GHO tokens into a vault or as a liquidity
           provider to start earn some interest!
