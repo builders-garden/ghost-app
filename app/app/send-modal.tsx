@@ -9,14 +9,20 @@ import {
   shortenAddress,
   useContract,
   useContractRead,
+  useContractWrite,
   useTransferToken,
 } from "@thirdweb-dev/react-native";
-import { GHO_SEPOLIA_ADDRESS } from "../../constants/sepolia";
+import {
+  AAVE_BORROW_ADDRESS,
+  GHO_ASSET_PRICE,
+  GHO_SEPOLIA_ADDRESS,
+} from "../../constants/sepolia";
 import { BigNumber } from "ethers";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { doc, setDoc } from "firebase/firestore";
 import { firebaseFirestore } from "../../firebaseConfig";
 import AppButton from "../../components/app-button";
+import { formatUnits } from "ethers/lib/utils";
 
 export default function SendModal() {
   const [copied, setCopied] = useState(false);
@@ -40,13 +46,40 @@ export default function SendModal() {
         .toNumber()
         .toFixed(2)
     : (0).toFixed(2);
+  const { contract: aaveBorrowContract } = useContract(AAVE_BORROW_ADDRESS);
+  const { data: userData, isLoading } = useContractRead(
+    aaveBorrowContract,
+    "getUserAccountData",
+    // [user?.address]
+    ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
+  );
+  const { mutateAsync: borrow, isLoading: borrowLoading } = useContractWrite(
+    aaveBorrowContract,
+    "borrow"
+  );
 
-  const canSend = Number(balance) > Number(amount) && parseFloat(amount) > 0;
+  const canBorrow =
+    userData && userData[2]
+      ? parseFloat(userData[2].div(GHO_ASSET_PRICE).toString()) > 0
+      : false;
+  const needToBorrow = Number(balance) < Number(amount);
+  const canSend = parseFloat(amount);
 
   const sendTokens = async () => {
     if (transferLoading || loading || !sendUser) return;
     setLoading(true);
     try {
+      if (needToBorrow && canBorrow) {
+        await borrow({
+          args: [
+            GHO_SEPOLIA_ADDRESS,
+            formatUnits(amount, 18),
+            2,
+            0,
+            user?.address,
+          ],
+        });
+      }
       const { receipt } = await transfer({
         to: sendUser!.address,
         amount,
@@ -148,8 +181,10 @@ export default function SendModal() {
         />
         <Text className="text-white font-bold">GHO</Text>
       </View>
-      {Number(amount) > Number(balance) && (
-        <Text className="text-red-500 text-xs">Amount exceeds balance.</Text>
+      {Number(amount) > Number(balance) && !canBorrow && (
+        <Text className="text-red-500 text-xs">
+          Not enough collateral to borrow.
+        </Text>
       )}
       {Number(amount) <= 0 && (
         <Text className="text-red-500 text-xs">Amount cannot be zero.</Text>
@@ -159,9 +194,27 @@ export default function SendModal() {
           <ActivityIndicator animating={true} color={"#C9B3F9"} />
         ) : (
           <AppButton
-            text="Send"
+            text={
+              needToBorrow
+                ? !canBorrow
+                  ? `Not enough collateral to borrow ${
+                      Number(amount) - Number(balance)
+                    } GHO`
+                  : `Borrow ${
+                      Number(amount) - Number(balance)
+                    } GHO and send ${amount} GHO`
+                : canSend
+                ? `Send ${amount} GHO`
+                : "Send"
+            }
             onPress={() => sendTokens()}
-            variant={canSend ? "primary" : "disabled"}
+            variant={
+              needToBorrow && !canBorrow
+                ? "disabled"
+                : canSend
+                ? "primary"
+                : "disabled"
+            }
           />
           // <Web3Button
           //   contractAddress={GHO_SEPOLIA_ADDRESS}

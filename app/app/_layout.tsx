@@ -9,6 +9,10 @@ export default function AppLayout() {
         options={{ presentation: "modal", headerShown: false }}
       />
       <Stack.Screen
+        name="borrow-modal"
+        options={{ presentation: "modal", headerShown: false }}
+      />
+      <Stack.Screen
         name="export-private-key-modal"
         options={{ presentation: "modal", headerShown: false }}
       />

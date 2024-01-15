@@ -6,6 +6,7 @@ import * as Clipboard from "expo-clipboard";
 import React, { useEffect } from "react";
 import RNQRGenerator from "rn-qr-generator";
 import { useUserStore } from "../../store";
+import { shortenAddress } from "@thirdweb-dev/react-native";
 
 export default function AddMoneyModal() {
   const isPresented = router.canGoBack();
@@ -57,7 +58,9 @@ export default function AddMoneyModal() {
         Send GHO, USDC, USDT or DAI to your address below.
       </Text>
       <View className="bg-[#292836] rounded-lg flex flex-row justify-between mt-4 px-4 py-2">
-        <Text className="text-[#53516C] text-ellipsis">{user?.address}</Text>
+        <Text className="text-[#53516C] text-ellipsis">
+          {shortenAddress(user?.address)}
+        </Text>
         <Pressable
           onPress={async () => {
             await Clipboard.setStringAsync(user!.address);
