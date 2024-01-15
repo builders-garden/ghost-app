@@ -7,11 +7,17 @@ import { Slot } from "expo-router";
 import { View } from "react-native";
 import { sepolia } from "../constants/sepolia";
 import { PaperProvider } from "react-native-paper";
+//@ts-ignore
+import AwesomeIcon from "react-native-vector-icons/FontAwesome";
 
 export default function AppLayout() {
   //   const [fontsLoaded] = useFonts({});
   return (
-    <PaperProvider>
+    <PaperProvider
+      settings={{
+        icon: (props) => <AwesomeIcon {...props} />,
+      }}
+    >
       <ThirdwebProvider
         activeChain={sepolia.chainId}
         clientId={process.env.EXPO_PUBLIC_TW_CLIENT_ID}

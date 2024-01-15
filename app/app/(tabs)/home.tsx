@@ -6,7 +6,14 @@ import {
   useContractRead,
 } from "@thirdweb-dev/react-native";
 import { Redirect } from "expo-router";
-import { SafeAreaView, View, Text, ScrollView, Pressable } from "react-native";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  ImageBackground,
+} from "react-native";
 import {
   ActivityIndicator,
   Divider,
@@ -116,12 +123,14 @@ export default function Home() {
         <View className="flex flex-row items-center justify-between">
           <View className="flex flex-row items-center space-x-4 pl-2">
             <Avatar name={user.username.charAt(0).toUpperCase()} />
-            <Text className="text-[#C9B3F9] font-bold text-3xl">GHOst</Text>
+            <Text className="text-[#C9B3F9] font-black text-3xl italic">
+              GHOst
+            </Text>
           </View>
           <View className="flex flex-row items-center">
             {!refreshing ? (
               <IconButton
-                icon={() => <Icon source="refresh" color="#FFF" size={32} />}
+                icon={() => <Icon source="refresh" color="#FFF" size={24} />}
                 onPress={() => onRefresh()}
               />
             ) : (
@@ -130,30 +139,36 @@ export default function Home() {
               </View>
             )}
             <IconButton
-              icon={() => <Icon source="logout" color="#FFF" size={24} />}
+              icon={() => <Icon source="sign-out" color="#FFF" size={24} />}
               onPress={() => setShowModal(true)}
             />
           </View>
         </View>
-        <View className="p-24 flex flex-col space-y-4">
-          <Text className="text-[#53516C] font-semibold text-center">
-            Your balance
-          </Text>
-          <Text className="text-white font-bold text-center text-5xl">
-            ${balance}
-          </Text>
-          <View className="flex flex-row justify-evenly items-center">
-            <CircularButton
-              text="Add money"
-              icon="plus"
-              onPress={() => router.push("/app/add-money-modal")}
-            />
-            <CircularButton
-              text="Send"
-              icon="send"
-              onPress={() => router.push("/app/send")}
-            />
-          </View>
+        <View className="p-14">
+          <ImageBackground
+            source={require("../../../images/ghost.png")}
+            className="flex flex-col space-y-4 py-8 bg-opacity-20"
+            imageStyle={{ opacity: 0.1 }}
+          >
+            <Text className="text-white font-semibold text-center">
+              Your balance
+            </Text>
+            <Text className="text-white font-bold text-center text-5xl">
+              ${balance}
+            </Text>
+            <View className="flex flex-row justify-evenly items-center">
+              <CircularButton
+                text="Add money"
+                icon="plus"
+                onPress={() => router.push("/app/add-money-modal")}
+              />
+              <CircularButton
+                text="Send"
+                icon="send"
+                onPress={() => router.push("/app/send")}
+              />
+            </View>
+          </ImageBackground>
         </View>
         <Text className="text-[#53516C] font-semibold mt-4 mb-2">
           Transaction History

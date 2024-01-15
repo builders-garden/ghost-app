@@ -103,7 +103,7 @@ export default function Send() {
                       {result.username}
                     </Text>
                   </View>
-                  <Icon source="chevron-right" size={24} color="#FFF" />
+                  <Icon source="chevron-right" size={16} color="#FFF" />
                 </Pressable>
               ))}
             </View>

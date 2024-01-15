@@ -1,6 +1,6 @@
 import { Redirect, router } from "expo-router";
 import { useState } from "react";
-import { Switch, View, Text } from "react-native";
+import { Switch, View, Text, ImageBackground } from "react-native";
 import { Appbar, Icon } from "react-native-paper";
 import CircularButton from "../../../components/circular-button";
 import { useUserStore } from "../../../store";
@@ -28,9 +28,7 @@ export default function Pocket() {
           titleStyle={{ fontWeight: "bold" }}
         />
         <Appbar.Action
-          icon={() => (
-            <Icon source="information-outline" size={24} color="#FFF" />
-          )}
+          icon={() => <Icon source="info-circle" size={24} color="#FFF" />}
         />
       </Appbar.Header>
       <View className="flex-1 flex-col px-4 bg-[#201F2D]">
@@ -49,25 +47,31 @@ export default function Pocket() {
             disabled
           />
         </View>
-        <View className="px-24 pt-12 flex flex-col space-y-4">
-          <Text className="text-[#53516C] font-semibold text-center">
-            Your balance
-          </Text>
-          <Text className="text-white font-bold text-center text-5xl">
-            $83.00
-          </Text>
-          <View className="flex flex-row justify-evenly items-center">
-            <CircularButton
-              text="Add money"
-              icon="plus"
-              onPress={() => router.push("/app/add-money-modal")}
-            />
-            <CircularButton
-              text="Withdraw"
-              icon="download"
-              onPress={() => {}}
-            />
-          </View>
+        <View className="p-14">
+          <ImageBackground
+            source={require("../../../images/ghost.png")}
+            className="flex flex-col space-y-4 py-8 bg-opacity-20"
+            imageStyle={{ opacity: 0.1 }}
+          >
+            <Text className="text-white font-semibold text-center">
+              Your balance
+            </Text>
+            <Text className="text-white font-bold text-center text-5xl">
+              $83.00
+            </Text>
+            <View className="flex flex-row justify-evenly items-center">
+              <CircularButton
+                text="Add money"
+                icon="plus"
+                onPress={() => router.push("/app/add-money-modal")}
+              />
+              <CircularButton
+                text="Withdraw"
+                icon="download"
+                onPress={() => {}}
+              />
+            </View>
+          </ImageBackground>
         </View>
         <View className="flex flex-row items-center justify-evenly">
           <View className="flex flex-col items-center justify-center">

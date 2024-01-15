@@ -50,7 +50,7 @@ export default function AppTabsLayout() {
         options={{
           tabBarIcon: ({ focused }) => (
             <Icon
-              source="briefcase-variant"
+              source="briefcase"
               color={focused ? "#C9B3F9" : "#53516C"}
               size={24}
             />
