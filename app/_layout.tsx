@@ -1,4 +1,8 @@
-import { ThirdwebProvider, embeddedWallet } from "@thirdweb-dev/react-native";
+import {
+  ThirdwebProvider,
+  embeddedWallet,
+  smartWallet,
+} from "@thirdweb-dev/react-native";
 import { Slot } from "expo-router";
 import { View } from "react-native";
 import { sepolia } from "../constants/sepolia";
@@ -13,12 +17,19 @@ export default function AppLayout() {
         clientId={process.env.EXPO_PUBLIC_TW_CLIENT_ID}
         supportedChains={[sepolia]}
         supportedWallets={[
-          embeddedWallet({
-            auth: {
-              options: ["email", "google"],
-              redirectUrl: "ghost://",
-            },
-          }),
+          smartWallet(
+            embeddedWallet({
+              auth: {
+                options: ["email", "google"],
+                redirectUrl: "ghost://",
+              },
+            }),
+            {
+              factoryAddress: process.env
+                .EXPO_PUBLIC_TW_FACTORY_ADDRESS as string,
+              gasless: true,
+            }
+          ),
         ]}
       >
         <View className="bg-[#201F2D] flex-1">

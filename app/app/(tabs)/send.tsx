@@ -14,11 +14,12 @@ import { View, Text, Pressable } from "react-native";
 import { Appbar, Icon, Searchbar } from "react-native-paper";
 import { firebaseFirestore } from "../../../firebaseConfig";
 import Avatar from "../../../components/avatar";
-import { useSendStore } from "../../../store";
+import { useSendStore, useUserStore } from "../../../store";
 
 export default function Send() {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
+  const user = useUserStore((state) => state.user);
   const setSendUser = useSendStore((state) => state.setSendUser);
 
   const onChangeText = async (text: string) => {
@@ -30,7 +31,8 @@ export default function Send() {
         or(
           and(
             where("username", ">=", text),
-            where("username", "<=", text + "\uf8ff")
+            where("username", "<=", text + "\uf8ff"),
+            where("username", "!=", user?.username)
           )
           // and(
           //   where("address", ">=", text),

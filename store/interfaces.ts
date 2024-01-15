@@ -2,6 +2,7 @@ import { providers } from "ethers";
 
 export interface DBUser {
   address: string;
+  smartWalletAddress: string;
   createdAt: string;
   rounding: boolean;
   username: string;

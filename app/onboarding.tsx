@@ -1,4 +1,9 @@
-import { useAddress } from "@thirdweb-dev/react-native";
+import {
+  useAccountsForAddress,
+  useAddress,
+  useContract,
+  useContractWrite,
+} from "@thirdweb-dev/react-native";
 import { useEffect, useState } from "react";
 import { View, Text, TextInput, Switch } from "react-native";
 import { Appbar, ActivityIndicator } from "react-native-paper";
@@ -32,20 +37,29 @@ export default function Onboarding() {
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   const [loading, setLoading] = useState(true);
   const address = useAddress();
+  const { contract } = useContract(process.env.EXPO_PUBLIC_TW_FACTORY_ADDRESS!);
+  const { mutateAsync: createSmartAccount } = useContractWrite(
+    contract,
+    "createAccount"
+  );
+  const { data: smartWalletAddresses, refetch } = useAccountsForAddress(
+    contract,
+    address
+  );
   const setUser = useUserStore((state) => state.setUser);
 
   useEffect(() => {
-    if (address) {
+    if (address && smartWalletAddresses !== undefined) {
       step === 0 && createAccount(address);
     }
-  }, [step, address]);
+  }, [step, address, smartWalletAddresses]);
 
   const createAccount = async (address: string) => {
-    let password = await SecureStore.getItemAsync("password");
+    let password = await SecureStore.getItemAsync(`password-${address}`);
     if (!password) {
       password = generatePassword();
     }
-    await SecureStore.setItemAsync("password", password);
+    await SecureStore.setItemAsync(`password-${address}`, password);
 
     if (!firebaseAuth.currentUser) {
       try {
@@ -61,6 +75,12 @@ export default function Onboarding() {
           password
         );
       }
+    }
+    if (smartWalletAddresses?.length === 0) {
+      const res = await createSmartAccount({
+        args: [address, "0x"],
+      });
+      await refetch();
     }
 
     setTimeout(() => {
@@ -78,6 +98,7 @@ export default function Onboarding() {
         username,
         rounding: isEnabled,
         createdAt: new Date().toISOString(),
+        smartWalletAddress: smartWalletAddresses![0],
       };
       await setDoc(
         doc(firebaseFirestore, "users", firebaseAuth.currentUser!.uid),
@@ -94,7 +115,7 @@ export default function Onboarding() {
 
   const finishOnboarding = async () => {
     await setFirebaseUsername();
-    await SecureStore.setItemAsync("onboarding", "true");
+    await SecureStore.setItemAsync(`onboarding-${address}`, "true");
     router.push("/app/home");
   };
 

@@ -57,9 +57,8 @@ export default function Settings() {
           <AppButton
             text="VIEW ACCOUNT ON EXPLORER"
             onPress={async () => {
-              const address = await signer.getAddress();
               await WebBrowser.openBrowserAsync(
-                `${sepolia.explorers[0].url}/address/${address}`
+                `${sepolia.explorers[0].url}/address/${user?.smartWalletAddress}`
               );
             }}
             variant="ghost"

@@ -2,21 +2,21 @@ import { Pressable, View, Image } from "react-native";
 import { Link, router } from "expo-router";
 import { Appbar, Icon } from "react-native-paper";
 import { Text } from "react-native";
-import { useAddress } from "@thirdweb-dev/react-native";
 import * as Clipboard from "expo-clipboard";
 import React, { useEffect } from "react";
 import RNQRGenerator from "rn-qr-generator";
+import { useUserStore } from "../../store";
 
 export default function AddMoneyModal() {
   const isPresented = router.canGoBack();
-  const address = useAddress();
+  const user = useUserStore((state) => state.user);
   const [copied, setCopied] = React.useState(false);
   const [qrText, setQRText] = React.useState("");
 
   useEffect(() => {
-    if (address) {
+    if (user) {
       RNQRGenerator.generate({
-        value: address!,
+        value: user?.smartWalletAddress,
         height: 400,
         width: 400,
         correctionLevel: "H",
@@ -28,7 +28,7 @@ export default function AddMoneyModal() {
         })
         .catch((error) => console.error(error));
     }
-  }, [address]);
+  }, [user]);
 
   return (
     <View className="flex-1 flex-col px-4 bg-[#201F2D]">
@@ -57,10 +57,12 @@ export default function AddMoneyModal() {
         Send GHO, USDC, USDT or DAI to your address below.
       </Text>
       <View className="bg-[#292836] rounded-lg flex flex-row justify-between mt-4 px-4 py-2">
-        <Text className="text-[#53516C] text-ellipsis">{address}</Text>
+        <Text className="text-[#53516C] text-ellipsis">
+          {user?.smartWalletAddress}
+        </Text>
         <Pressable
           onPress={async () => {
-            await Clipboard.setStringAsync(address!);
+            await Clipboard.setStringAsync(user!.smartWalletAddress);
             setCopied(true);
           }}
         >

@@ -37,23 +37,18 @@ export default function Home() {
     isLoading: balanceOfLoading,
     error,
     refetch: balanceRefetch,
-  } = useContractRead(contract, "balanceOf", [address]);
-  const { data: decimalsData, isLoading: decimalsLoading } = useContractRead(
-    contract,
-    "decimals",
-    []
-  );
+  } = useContractRead(contract, "balanceOf", [user?.smartWalletAddress]);
   const transactions = useTransactionsStore((state) => state.transactions);
   const setTransactions = useTransactionsStore(
     (state) => state.setTransactions
   );
-  const balance =
-    balanceData && decimalsData
-      ? (balanceData as BigNumber)
-          .div(BigNumber.from(10).pow(decimalsData as number))
-          .toNumber()
-          .toFixed(2)
-      : (0).toFixed(2);
+  console.log(balanceData);
+  const balance = balanceData
+    ? (balanceData as BigNumber)
+        .div(BigNumber.from(10).pow(18))
+        .toNumber()
+        .toFixed(2)
+    : (0).toFixed(2);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -75,11 +70,11 @@ export default function Home() {
     try {
       const toQ = query(
         collection(firebaseFirestore, "transactions"),
-        where("to", "==", address)
+        where("to", "==", user?.smartWalletAddress)
       );
       const fromQ = query(
         collection(firebaseFirestore, "transactions"),
-        where("from", "==", address)
+        where("from", "==", user?.smartWalletAddress)
       );
 
       const [toSnapshot, fromSnapshot] = await Promise.all([
@@ -117,9 +112,9 @@ export default function Home() {
     <SafeAreaView className="bg-[#201F2D] flex-1">
       <View className="flex flex-col px-4 mt-2 bg-[#201F2D]">
         <View className="flex flex-row items-center justify-between">
-          <View className="flex flex-row items-center space-x-4">
+          <View className="flex flex-row items-center space-x-4 pl-2">
             <Avatar name={user.username.charAt(0).toUpperCase()} />
-            <Text className="text-white font-bold text-3xl">Ghost</Text>
+            <Text className="text-[#C9B3F9] font-bold text-3xl">GHOst</Text>
           </View>
           <View className="flex flex-row items-center">
             {!refreshing ? (
@@ -194,10 +189,13 @@ export default function Home() {
                     <View className="flex flex-col items-end justify-center space-y-1">
                       <Text
                         className={`${
-                          to === address ? "text-emerald-500" : "text-red-500"
+                          to === user?.smartWalletAddress
+                            ? "text-emerald-500"
+                            : "text-red-500"
                         } font-semibold`}
                       >
-                        {to === address ? "+" : "-"} ${amount.toFixed(2)}
+                        {to === user?.smartWalletAddress ? "+" : "-"} $
+                        {amount.toFixed(2)}
                       </Text>
                       <Text className="text-xs text-[#53516C]">
                         {createdAt}
