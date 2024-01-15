@@ -1,0 +1,178 @@
+import { useAddress } from "@thirdweb-dev/react-native";
+import { useEffect, useState } from "react";
+import { View, Text, TextInput, Switch } from "react-native";
+import { Appbar, ActivityIndicator } from "react-native-paper";
+import * as SecureStore from "expo-secure-store";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { firebaseAuth, firebaseFirestore } from "../firebaseConfig";
+import AppButton from "../components/app-button";
+import { router } from "expo-router";
+import { doc, setDoc } from "firebase/firestore";
+import { useUserStore } from "../store";
+
+const generatePassword = () => {
+  const chars =
+    "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const passwordLength = 12;
+  let password = "";
+  for (let i = 0; i <= passwordLength; i++) {
+    const randomNumber = Math.floor(Math.random() * chars.length);
+    password += chars.substring(randomNumber, randomNumber + 1);
+  }
+  return password;
+};
+
+export default function Onboarding() {
+  const [step, setStep] = useState(0);
+  const [username, setUsername] = useState("");
+  const [isEnabled, setIsEnabled] = useState(true);
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [loading, setLoading] = useState(true);
+  const address = useAddress();
+  const setUser = useUserStore((state) => state.setUser);
+
+  useEffect(() => {
+    if (address) {
+      step === 0 && createAccount(address);
+    }
+  }, [step, address]);
+
+  const createAccount = async (address: string) => {
+    let password = await SecureStore.getItemAsync("password");
+    if (!password) {
+      password = generatePassword();
+    }
+    await SecureStore.setItemAsync("password", password);
+
+    if (!firebaseAuth.currentUser) {
+      try {
+        await createUserWithEmailAndPassword(
+          firebaseAuth,
+          `${address}@ghost.app`,
+          password
+        );
+      } catch (error) {
+        await signInWithEmailAndPassword(
+          firebaseAuth,
+          `${address}@ghost.app`,
+          password
+        );
+      }
+    }
+
+    setTimeout(() => {
+      setStep(step + 1);
+      setLoading(false);
+    }, 1500);
+  };
+
+  const setFirebaseUsername = async () => {
+    if (!address || loading) return;
+    setLoading(true);
+    try {
+      const user = {
+        address: address,
+        username,
+        rounding: isEnabled,
+        createdAt: new Date().toISOString(),
+      };
+      await setDoc(
+        doc(firebaseFirestore, "users", firebaseAuth.currentUser!.uid),
+        user
+      );
+      setUser(user);
+      setStep(step + 1);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const finishOnboarding = async () => {
+    await setFirebaseUsername();
+    await SecureStore.setItemAsync("onboarding", "true");
+    router.push("/app/home");
+  };
+
+  return (
+    <View className="flex-1 ">
+      <Appbar.Header className="bg-[#201F2D] text-white">
+        <Appbar.Content
+          title="Onboarding"
+          color="#fff"
+          titleStyle={{ fontWeight: "bold" }}
+        />
+      </Appbar.Header>
+      {step === 0 && (
+        <View className="flex-1 flex-col items-center justify-center space-y-2">
+          <Text className="text-white font-semibold text-xl">
+            Creating your account..
+          </Text>
+          <ActivityIndicator animating={loading} color={"#C9B3F9"} />
+        </View>
+      )}
+      {step === 1 && (
+        <View className="flex flex-col items-start px-4 justify-center space-y-2">
+          {/* <Text className="text-white font-semibold text-xl">
+            Choose your preferences
+          </Text> */}
+          <View className="w-full h-full">
+            <Text className="text-[#C9B3F9] font-semibold my-2">Username</Text>
+            <Text className="text-white mb-2">
+              Other users will be able to find you via this handle.
+            </Text>
+            <TextInput
+              value={username}
+              onChangeText={setUsername}
+              autoCapitalize="none"
+              autoComplete="off"
+              autoCorrect={false}
+              className="mb-2 text-white border-2 border-[#C9B3F9] px-2 py-3 rounded-md placeholder-white"
+            />
+            <View className="flex flex-row justify-between mt-2 mb-4">
+              <Text className="max-w-[300px] text-white">
+                Set aside the remainder of each purchase rounded to the nearest
+                dollar (if you pay $1.30 set aside $0.70). This option is
+                enabled by default.
+              </Text>
+              <Switch
+                trackColor={{ false: "black", true: "#C9B3F9" }}
+                thumbColor={"#201F2D"}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={toggleSwitch}
+                value={isEnabled}
+                disabled
+              />
+            </View>
+            <AppButton
+              text="Complete onboarding"
+              variant={username.length > 3 ? "primary" : "disabled"}
+              onPress={() => finishOnboarding()}
+            />
+          </View>
+        </View>
+      )}
+      {step === 2 && (
+        <View className="flex-1 flex-col items-center justify-center space-y-2">
+          <Text className="text-white font-semibold text-xl">
+            Your account has been created!
+          </Text>
+          {/* <View className="w-full max-w-[300px]">
+            <AppButton text="Enable notifications" onPress={() => {}} />
+          </View> */}
+          <View className="w-full max-w-[300px]">
+            <AppButton
+              text="Continue"
+              variant="ghost"
+              onPress={() => finishOnboarding()}
+            />
+          </View>
+        </View>
+      )}
+    </View>
+  );
+}
