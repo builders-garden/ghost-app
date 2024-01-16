@@ -35,7 +35,7 @@ export default function Settings() {
         />
       </Appbar.Header>
       <View className="flex-1 flex-col px-4 bg-[#201F2D]">
-        <View className="flex-1 flex-col px-4 mt-4">
+        <View className="flex-1 flex-col px-0 mt-4">
           <View className="flex flex-row space-x-4 items-center mb-8">
             <Avatar name={user.username.charAt(0).toUpperCase()} />
             <View className="flex flex-col space-y-1">
@@ -66,9 +66,9 @@ export default function Settings() {
           <Text className="text-[#53516C] font-semibold mt-8">Preferences</Text>
           <View className="flex flex-row justify-between mt-2">
             <Text className="max-w-[300px] text-white">
-              Set aside the remainder of each purchase rounded to the nearest
-              dollar (if you pay $1.30 set aside $0.70). This is enabled by
-              default.
+              Set aside the remainder of each received transaction rounded to
+              the nearest dollar (if you pay $1.30 set aside $0.70). This is
+              enabled by default.
             </Text>
             <Switch
               trackColor={{ false: "black", true: "#C9B3F9" }}

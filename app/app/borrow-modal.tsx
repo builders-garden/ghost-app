@@ -16,6 +16,7 @@ import {
 import AppButton from "../../components/app-button";
 import { doc, setDoc } from "firebase/firestore";
 import { firebaseFirestore } from "../../firebaseConfig";
+import Toast from "react-native-toast-message";
 
 export default function BorrowModal() {
   const isPresented = router.canGoBack();
@@ -50,45 +51,73 @@ export default function BorrowModal() {
   // );
 
   const executeBorrow = async () => {
-    const { receipt } = await borrow({
-      args: [GHO_SEPOLIA_ADDRESS, userData[2], 2, 0, user?.address],
-    });
+    try {
+      const { receipt } = await borrow({
+        args: [GHO_SEPOLIA_ADDRESS, userData[2], 2, 0, user?.address],
+      });
 
-    const transaction = {
-      txHash: receipt.transactionHash,
-      blockNumber: receipt.blockNumber,
-      from: user?.address,
-      action: "Borrow",
-      amount: userData[2].div(GHO_ASSET_PRICE).toString(),
-      createdAt: new Date().toISOString(),
-    };
-    await setDoc(
-      doc(firebaseFirestore, "pockets", receipt.transactionHash),
-      transaction
-    );
+      const transaction = {
+        txHash: receipt.transactionHash,
+        blockNumber: receipt.blockNumber,
+        from: user?.address,
+        action: "Borrow",
+        amount: userData[2].div(GHO_ASSET_PRICE).toString(),
+        createdAt: new Date().toISOString(),
+      };
+      await setDoc(
+        doc(firebaseFirestore, "pockets", receipt.transactionHash),
+        transaction
+      );
+      Toast.show({
+        type: "success",
+        text1: "Success!",
+        text2: "Borrowed GHO successfully.",
+      });
 
-    router.back();
+      router.back();
+    } catch (error) {
+      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "Error!",
+        text2: "Error borrowing GHO. Try again.",
+      });
+    }
   };
 
   const executeRepay = async () => {
-    const { receipt } = await repay({
-      args: [GHO_SEPOLIA_ADDRESS, userData[1], 2, user?.address],
-    });
+    try {
+      const { receipt } = await repay({
+        args: [GHO_SEPOLIA_ADDRESS, userData[1], 2, user?.address],
+      });
 
-    const transaction = {
-      txHash: receipt.transactionHash,
-      blockNumber: receipt.blockNumber,
-      from: user?.address,
-      action: "Repay",
-      amount: userData[1].div(GHO_ASSET_PRICE).toString(),
-      createdAt: new Date().toISOString(),
-    };
+      const transaction = {
+        txHash: receipt.transactionHash,
+        blockNumber: receipt.blockNumber,
+        from: user?.address,
+        action: "Repay",
+        amount: userData[1].div(GHO_ASSET_PRICE).toString(),
+        createdAt: new Date().toISOString(),
+      };
 
-    await setDoc(
-      doc(firebaseFirestore, "pockets", receipt.transactionHash),
-      transaction
-    );
-    router.back();
+      await setDoc(
+        doc(firebaseFirestore, "pockets", receipt.transactionHash),
+        transaction
+      );
+      Toast.show({
+        type: "success",
+        text1: "Success!",
+        text2: "Repayed GHO successfully.",
+      });
+      router.back();
+    } catch (error) {
+      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "Error!",
+        text2: "Error repaying GHO. Try again.",
+      });
+    }
   };
 
   return (

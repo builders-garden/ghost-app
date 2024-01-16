@@ -23,6 +23,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { firebaseFirestore } from "../../firebaseConfig";
 import AppButton from "../../components/app-button";
 import { formatUnits } from "ethers/lib/utils";
+import Toast from "react-native-toast-message";
 
 export default function SendModal() {
   const [copied, setCopied] = useState(false);
@@ -98,9 +99,19 @@ export default function SendModal() {
         doc(firebaseFirestore, "transactions", receipt.transactionHash),
         transaction
       );
+      Toast.show({
+        type: "success",
+        text1: "Success!",
+        text2: "GHO sent successfully.",
+      });
       router.back();
     } catch (error) {
       console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Error!",
+        text2: "An error has occurred. Try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -216,14 +227,6 @@ export default function SendModal() {
                 : "disabled"
             }
           />
-          // <Web3Button
-          //   contractAddress={GHO_SEPOLIA_ADDRESS}
-          //   action={(contract) =>
-          //     contract.erc20.transfer(sendUser!.smartWalletAddress, amount)
-          //   }
-          // >
-          //   Send
-          // </Web3Button>
         )}
       </SafeAreaView>
     </View>

@@ -17,7 +17,15 @@ export default function AppLayout() {
         options={{ presentation: "modal", headerShown: false }}
       />
       <Stack.Screen
+        name="pocket-info-modal"
+        options={{ presentation: "modal", headerShown: false }}
+      />
+      <Stack.Screen
         name="send-modal"
+        options={{ presentation: "modal", headerShown: false }}
+      />
+      <Stack.Screen
+        name="vault-modal"
         options={{ presentation: "modal", headerShown: false }}
       />
     </Stack>

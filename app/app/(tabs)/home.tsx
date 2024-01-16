@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-  useAddress,
   useConnectedWallet,
   useContract,
   useContractRead,
@@ -33,6 +32,7 @@ import { firebaseFirestore } from "../../../firebaseConfig";
 import { DBTransaction } from "../../../store/interfaces";
 import TimeAgo from "@andordavoti/react-native-timeago";
 import * as WebBrowser from "expo-web-browser";
+import Toast from "react-native-toast-message";
 
 export default function Home() {
   const signer = useConnectedWallet();
@@ -40,13 +40,11 @@ export default function Home() {
   const [refreshing, setRefreshing] = React.useState(false);
   const user = useUserStore((state) => state.user);
   const { contract } = useContract(GHO_SEPOLIA_ADDRESS);
-  const address = useAddress();
-  const {
-    data: balanceData,
-    isLoading: balanceOfLoading,
-    error,
-    refetch: balanceRefetch,
-  } = useContractRead(contract, "balanceOf", [user?.address]);
+  const { data: balanceData, refetch: balanceRefetch } = useContractRead(
+    contract,
+    "balanceOf",
+    [user?.address]
+  );
   const transactions = useTransactionsStore((state) => state.transactions);
   const setTransactions = useTransactionsStore(
     (state) => state.setTransactions
@@ -63,6 +61,11 @@ export default function Home() {
     setTransactions([]);
     try {
       await Promise.all([balanceRefetch(), fetchTransactions()]);
+      Toast.show({
+        type: "success",
+        text1: "Refreshed!",
+        text2: "Your balance and transactions have been refreshed.",
+      });
     } catch (error) {
       console.log(error);
     } finally {

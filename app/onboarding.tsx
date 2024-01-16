@@ -1,4 +1,8 @@
-import { useAddress } from "@thirdweb-dev/react-native";
+import {
+  useAddress,
+  useContract,
+  useContractWrite,
+} from "@thirdweb-dev/react-native";
 import { useEffect, useState } from "react";
 import { View, Text, TextInput, Switch } from "react-native";
 import { Appbar, ActivityIndicator } from "react-native-paper";
@@ -12,6 +16,12 @@ import AppButton from "../components/app-button";
 import { router } from "expo-router";
 import { doc, setDoc } from "firebase/firestore";
 import { useUserStore } from "../store";
+import {
+  AAVE_POOL_ADDRESS,
+  USDC_ADDRESS,
+  USDT_ADDRESS,
+} from "../constants/sepolia";
+import { ethers } from "ethers";
 
 const generatePassword = () => {
   const chars =
@@ -33,6 +43,16 @@ export default function Onboarding() {
   const [loading, setLoading] = useState(true);
   const address = useAddress();
   const setUser = useUserStore((state) => state.setUser);
+  const { contract: usdcContract } = useContract(USDC_ADDRESS);
+  const { mutateAsync: approveUSDC } = useContractWrite(
+    usdcContract,
+    "approve"
+  );
+  const { contract: usdtContract } = useContract(USDT_ADDRESS);
+  const { mutateAsync: approveUSDT } = useContractWrite(
+    usdtContract,
+    "approve"
+  );
 
   useEffect(() => {
     if (address) {
@@ -62,12 +82,14 @@ export default function Onboarding() {
         );
       }
     }
-    // if (smartWalletAddresses?.length === 0) {
-    //   const res = await createSmartAccount({
-    //     args: [address, "0x"],
-    //   });
-    //   await refetch();
-    // }
+
+    const { receipt: usdcReceipt } = await approveUSDC({
+      args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
+    });
+
+    const { receipt: usdtReceipt } = await approveUSDT({
+      args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
+    });
 
     setTimeout(() => {
       setStep(step + 1);
@@ -142,9 +164,9 @@ export default function Onboarding() {
             />
             <View className="flex flex-row justify-between mt-2 mb-4">
               <Text className="max-w-[300px] text-white">
-                Set aside the remainder of each purchase rounded to the nearest
-                dollar (if you pay $1.30 set aside $0.70). This option is
-                enabled by default.
+                Set aside the remainder of each received transaction rounded to
+                the nearest dollar (if you pay $1.30 set aside $0.70). This
+                option is enabled by default.
               </Text>
               <Switch
                 trackColor={{ false: "black", true: "#C9B3F9" }}

@@ -1,13 +1,16 @@
 import { Redirect, router } from "expo-router";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, Pressable } from "react-native";
 import { Appbar, Icon } from "react-native-paper";
 import { useUserStore } from "../../../store";
 import AppButton from "../../../components/app-button";
 import { useContract, useContractRead } from "@thirdweb-dev/react-native";
 import {
   AAVE_BORROW_ADDRESS,
+  AUSDC_ADDRESS,
+  AUSDT_ADDRESS,
   GHO_ASSET_PRICE,
 } from "../../../constants/sepolia";
+import { BigNumber } from "ethers";
 
 export default function Pocket() {
   const user = useUserStore((state) => state.user);
@@ -18,6 +21,36 @@ export default function Pocket() {
     [user?.address]
     // ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
   );
+  const { contract: aUSDTContract } = useContract(AUSDT_ADDRESS);
+  const { contract: aUSDCContract } = useContract(AUSDC_ADDRESS);
+  const { data: aUSDTBalance = BigNumber.from(0) } = useContractRead(
+    aUSDTContract,
+    "balanceOf",
+    [user?.address]
+  );
+  const { data: aUSDCBalance = BigNumber.from(0) } = useContractRead(
+    aUSDCContract,
+    "balanceOf",
+    [user?.address]
+  );
+  const { contract: vaultContract } = useContract("");
+  const { data: userShares = BigNumber.from(0) } = useContractRead(
+    vaultContract,
+    "balanceOf",
+    [user?.address]
+  );
+  const { data: userVaultBalance = BigNumber.from(0) } = useContractRead(
+    vaultContract,
+    "convertUserSharesToAssets",
+    [user?.address, userShares]
+  );
+  const vaultBalance = userVaultBalance
+    .div(BigNumber.from(10).pow(18))
+    .toNumber();
+  const aaveLendingBalance = aUSDTBalance
+    .div(BigNumber.from(10).pow(6))
+    .add(aUSDCBalance.div(BigNumber.from(10).pow(6)))
+    .toNumber();
 
   if (!user) {
     return <Redirect href={"/"} />;
@@ -38,21 +71,17 @@ export default function Pocket() {
         />
         <Appbar.Action
           icon={() => <Icon source="info-circle" size={24} color="#FFF" />}
+          onPress={() => router.push("/app/pocket-info-modal")}
         />
       </Appbar.Header>
-      <View className="flex-1 flex-col w-full px-4 bg-[#201F2D]">
-        <Text className="text-white text-justify text-lg leading-5">
-          Welcome to your <Text className="font-bold">GHOst pocket</Text>! Here
-          you can deposit your GHO tokens into a vault or as a liquidity
-          provider to start earning some interest!
-        </Text>
+      <View className="flex-1 flex-col items-center justify-center w-full px-4 bg-[#201F2D]">
         <View className="px-14">
           <View className="flex flex-col space-y-4 pb-8 pt-4">
             <Text className="text-white font-semibold text-center">
-              Your balance
+              Pocket balance
             </Text>
             <Text className="text-white font-bold text-center text-5xl">
-              $83.00
+              ${(vaultBalance + aaveLendingBalance).toFixed(2)}
             </Text>
           </View>
         </View>
@@ -64,22 +93,27 @@ export default function Pocket() {
             />
             <View className="flex flex-col items-start">
               <Text className="text-white text-lg font-black text-center">
-                Vault
+                AAVE Lending
               </Text>
-              <Text className="text-white/80 font-semibold">$53.00</Text>
+              <Text className="text-white/80 font-semibold">
+                ${aaveLendingBalance.toFixed(2)}
+              </Text>
             </View>
           </View>
           <View className="flex flex-row items-center space-x-4 justify-between">
             <View className="flex flex-col mr-6 items-end">
               <Text className="text-lg text-emerald-500 font-semibold">
-                10.00%
+                1.5%
               </Text>
               <Text className="text-[#53516C]">APY</Text>
             </View>
-            <Icon source="chevron-right" size={16} color="#C9B3F9" />
+            {/* <Icon source="chevron-right" size={16} color="#C9B3F9" /> */}
           </View>
         </View>
-        <View className="border-2 border-[#C9B3F9] w-full p-3 rounded-lg flex flex-row items-center justify-between mt-4">
+        <Pressable
+          className="border-2 border-[#C9B3F9] w-full p-3 rounded-lg flex flex-row items-center justify-between mt-4"
+          onPress={() => router.push("/app/vault-modal")}
+        >
           <View className="flex flex-row space-x-2 items-center">
             <Image
               source={require("../../../images/ghost.png")}
@@ -87,21 +121,21 @@ export default function Pocket() {
             />
             <View className="flex flex-col items-start">
               <Text className="text-white text-lg font-black text-center">
-                LP
+                GHO Vault
               </Text>
-              <Text className="text-white/80 font-semibold">$30.00</Text>
+              <Text className="text-white/80 font-semibold">
+                ${vaultBalance.toFixed(2)}
+              </Text>
             </View>
           </View>
           <View className="flex flex-row items-center space-x-4 justify-between">
             <View className="flex flex-col mr-6 items-end">
-              <Text className="text-lg text-emerald-500 font-semibold">
-                8.70%
-              </Text>
+              <Text className="text-lg text-emerald-500 font-semibold">3%</Text>
               <Text className="text-[#53516C]">APY</Text>
             </View>
             <Icon source="chevron-right" size={16} color="#C9B3F9" />
           </View>
-        </View>
+        </Pressable>
         <View className="my-8 flex items-center w-full">
           <View className="px-14">
             <View className="flex flex-col space-y-4 pb-8 pt-4">

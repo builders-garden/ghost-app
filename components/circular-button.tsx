@@ -12,7 +12,7 @@ export default function CircularButton({
 }) {
   return (
     <Pressable onPress={onPress}>
-      <View className="flex flex-col items-center justify-center space-y-1">
+      <View className="flex flex-col items-center justify-center space-y-2">
         <View className="bg-[#C9B3F9] rounded-full w-16 h-16 flex items-center justify-center">
           <Icon source={icon} color="#201F2D" size={24} />
         </View>
