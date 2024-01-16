@@ -165,7 +165,7 @@ export default function Onboarding() {
             <View className="flex flex-row justify-between mt-2 mb-4">
               <Text className="max-w-[300px] text-white">
                 Set aside the remainder of each received transaction rounded to
-                the nearest dollar (if you pay $1.30 set aside $0.70). This
+                the nearest dollar (if you receive $1.30 set aside $0.30). This
                 option is enabled by default.
               </Text>
               <Switch
