@@ -8,7 +8,7 @@ import {
   useContractWrite,
 } from "@thirdweb-dev/react-native";
 import { useUserStore } from "../../store";
-import { GHO_SEPOLIA_ADDRESS } from "../../constants/sepolia";
+import { GHO_SEPOLIA_ADDRESS, VAULT_ADDRESS } from "../../constants/sepolia";
 import { BigNumber } from "ethers";
 import { useState } from "react";
 import AppButton from "../../components/app-button";
@@ -23,14 +23,14 @@ export default function PocketInfoModal() {
     .div(BigNumber.from(10).pow(18))
     .toNumber()
     .toFixed(2);
-  const { contract: vaultContract } = useContract("");
+  const { contract: vaultContract } = useContract(VAULT_ADDRESS);
   const { data: totalShares = BigNumber.from(0) } = useContractRead(
     vaultContract,
-    "totalSupply"
+    "totalAssets"
   );
   const { data: userShares = BigNumber.from(0) } = useContractRead(
     vaultContract,
-    "balanceOf",
+    "totalAssetsOfUser",
     [user?.address]
   );
   const { data: userBalance = BigNumber.from(0) } = useContractRead(

@@ -19,6 +19,8 @@ We are applying for the following tracks:
 - **AAVE Vaults**: we developed an ERC-4626 GHO Vault that allows users to deposit GHO tokens and use them as liquidity provider into a GHO/USDC Uniswap pool. This vault is also auto-populated when users receive GHO tokens and all the GHOst users share the same vault contract. Also, any remainder of USDT or USDC tokens received by the user is automatically sent to AAVE Lending Contracts;
 - **AAVE Integration Prize**: for allowing users to manage GHO tokens seamlessly by using their email address or Google account.
 
+Although we are not applying for the **Chainlink** track (since we didn't find any suitable use case for it in this app context), we still leverage Chainlink's **AutomationCompatible** contract to perform the swap automations.
+
 ## ⚒️ GHOst Features
 
 GHOst is the first GHO native wallet; this means that everything is built around GHO tokens: transfers, deposits, withdrawals, borrows. It allows users to create a new Smart Wallet by using their email address or Google account. Once the account is created, a custom Smart Account contract is created in order to automatically swap between received USDT or USDC tokens into GHO.
@@ -29,6 +31,8 @@ Every time a user receives USDT, USDC or GHO, the remainder rounded to nearest d
 
 - **AAVE Lending Contracts** in the case of **USDT** or **USDC**. The rest (eg. $1) is automatically swapped to GHO (on Sepolia using a Mock Uniswap Router) and sent to the user's Smart Account. Here these tokens maybe used by the user in the future to borrow some GHO, or they can leave them there to accrue some interest;
 - **GHO Vault** in the case of GHO. The rest (eg. $1) is sent to the user's Smart Account. The tokens inside the GHO Vault are then used as liquidity provider into a GHO/USDC Uniswap pool.
+
+In addition to this, when a GHOst user wants to send GHO tokens to another user and the sender doesn't have enough GHO tokens in their Smart Account, the app **will automatically borrow** the required amount from the AAVE Lending Contracts to match the amount and send it to the recipient.
 
 ## 📱 App features
 
