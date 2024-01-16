@@ -9,6 +9,7 @@ import {
   AUSDC_ADDRESS,
   AUSDT_ADDRESS,
   GHO_ASSET_PRICE,
+  VAULT_ADDRESS,
 } from "../../../constants/sepolia";
 import { BigNumber } from "ethers";
 
@@ -33,10 +34,10 @@ export default function Pocket() {
     "balanceOf",
     [user?.address]
   );
-  const { contract: vaultContract } = useContract("");
+  const { contract: vaultContract } = useContract(VAULT_ADDRESS);
   const { data: userShares = BigNumber.from(0) } = useContractRead(
     vaultContract,
-    "balanceOf",
+    "totalAssetsOfUser",
     [user?.address]
   );
   const { data: userVaultBalance = BigNumber.from(0) } = useContractRead(

@@ -67,7 +67,7 @@ export default function Settings() {
           <View className="flex flex-row justify-between mt-2">
             <Text className="max-w-[300px] text-white">
               Set aside the remainder of each received transaction rounded to
-              the nearest dollar (if you pay $1.30 set aside $0.70). This is
+              the nearest dollar (if you receive $1.30 set aside $0.30). This is
               enabled by default.
             </Text>
             <Switch

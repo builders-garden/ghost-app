@@ -50,6 +50,8 @@ export const sepolia = {
   title: "Ethereum Testnet Sepolia",
 };
 
+export const VAULT_ADDRESS = "0xba743e062b790725ee00c3b857ef0ca28a10c774";
+export const ROUTER_ADDRESS = "0xd04b095b736d10744810d9eac344c306c100fe6f";
 export const AAVE_POOL_ADDRESS = "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951";
 export const AUSDT_ADDRESS = "0xAF0F6e8b0Dc5c913bbF4d14c22B4E78Dd14310B6";
 export const USDT_ADDRESS = "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0";
