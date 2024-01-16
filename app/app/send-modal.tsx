@@ -51,8 +51,8 @@ export default function SendModal() {
   const { data: userData, isLoading } = useContractRead(
     aaveBorrowContract,
     "getUserAccountData",
-    // [user?.address]
-    ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
+    [user?.address]
+    // ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
   );
   const { mutateAsync: borrow, isLoading: borrowLoading } = useContractWrite(
     aaveBorrowContract,
