@@ -17,7 +17,6 @@ import { router } from "expo-router";
 import { doc, setDoc } from "firebase/firestore";
 import { useUserStore } from "../store";
 import {
-  AAVE_POOL_ADDRESS,
   USDC_ADDRESS,
   USDT_ADDRESS,
 } from "../constants/sepolia";
@@ -83,13 +82,13 @@ export default function Onboarding() {
       }
     }
 
-    const { receipt: usdcReceipt } = await approveUSDC({
+    /*const { receipt: usdcReceipt } = await approveUSDC({
       args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
     });
 
     const { receipt: usdtReceipt } = await approveUSDT({
       args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
-    });
+    });*/
 
     setTimeout(() => {
       setStep(step + 1);

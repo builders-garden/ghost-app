@@ -4,7 +4,7 @@ import {
   useContract,
   useContractRead,
 } from "@thirdweb-dev/react-native";
-import { Redirect } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import {
   SafeAreaView,
   View,
@@ -125,7 +125,9 @@ export default function Home() {
       <View className="flex flex-col px-4 mt-2 bg-[#201F2D]">
         <View className="flex flex-row items-center justify-between">
           <View className="flex flex-row items-center space-x-4 pl-2">
-            <Avatar name={user.username.charAt(0).toUpperCase()} />
+            <Link href={"./settings"}>
+              <Avatar name={user.username.charAt(0).toUpperCase()} />
+            </Link>
             <Text className="text-[#C9B3F9] font-black text-3xl italic">
               GHOst
             </Text>

@@ -22,9 +22,9 @@ export default function AppButton({
 
   if (variant === "disabled") {
     return (
-      <View className="bg-transparent border-2 border-gray-400 rounded-md flex items-center justify-center py-3">
-        <Text className="text-lg text-gray-400 font-semibold">{text}</Text>
-      </View>
+        <View className="bg-[#C9B3F9] border-2 opacity-50 border-[#C9B3F9] rounded-md flex items-center justify-center py-3">
+          <Text className="text-lg text-black font-semibold">{text}</Text>
+        </View>
     );
   }
 

@@ -6,6 +6,7 @@ import { useSendStore, useUserStore } from "../../store";
 import * as Clipboard from "expo-clipboard";
 import { useState } from "react";
 import {
+  Box,
   shortenAddress,
   useContract,
   useContractRead,
@@ -24,6 +25,10 @@ import { firebaseFirestore } from "../../firebaseConfig";
 import AppButton from "../../components/app-button";
 import { formatUnits } from "ethers/lib/utils";
 import Toast from "react-native-toast-message";
+import { AmountChooser } from "../../components/amount-chooser";
+import Avatar from "../../components/avatar";
+import { InfoBox } from "../../components/infobox";
+import Spacer from "../../components/spacer";
 
 export default function SendModal() {
   const [copied, setCopied] = useState(false);
@@ -34,7 +39,7 @@ export default function SendModal() {
   const { contract } = useContract(GHO_SEPOLIA_ADDRESS);
   const { mutateAsync: transfer, isLoading: transferLoading } =
     useTransferToken(contract);
-  const [amount, setAmount] = useState("0");
+  const [amount, setAmount] = useState(0);
   const [loading, setLoading] = useState(false);
   const { data: balanceData, isLoading: balanceOfLoading } = useContractRead(
     contract,
@@ -51,8 +56,8 @@ export default function SendModal() {
   const { data: userData, isLoading } = useContractRead(
     aaveBorrowContract,
     "getUserAccountData",
-    // [user?.address]
-    ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
+    [user?.address]
+    // ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
   );
   const { mutateAsync: borrow, isLoading: borrowLoading } = useContractWrite(
     aaveBorrowContract,
@@ -64,7 +69,7 @@ export default function SendModal() {
       ? parseFloat(userData[2].div(GHO_ASSET_PRICE).toString()) > 0
       : false;
   const needToBorrow = Number(balance) < Number(amount);
-  const canSend = parseFloat(amount);
+  const canSend = Number(amount) <= Number(balance) && Number(amount) > 0;
 
   const sendTokens = async () => {
     if (transferLoading || loading || !sendUser) return;
@@ -144,89 +149,75 @@ export default function SendModal() {
           size={20}
         />
       </Appbar.Header>
-      <Text className="text-[#53516C] font-semibold mt-8">
-        Recipient address
-      </Text>
-      {/* <Text className="text-white font-semibold mt-2">{sendUser?.address}</Text> */}
-      <View className="bg-[#292836] rounded-lg flex flex-row justify-between mt-4 px-4 py-2">
-        <Text className="text-[#53516C] text-ellipsis">
+      <View className="flex flex-col items-center mt-4 space-y-2">
+        <Avatar name={sendUser?.username.charAt(0).toUpperCase()} />
+        <Text className="text-white text-lg text-center font-semibold">
+          {sendUser?.username}
+        </Text>
+        <Text className="text-gray-600 text-ellipsis">
           {shortenAddress(sendUser?.address, false)}
         </Text>
-        <Pressable
-          onPress={async () => {
-            await Clipboard.setStringAsync(sendUser?.address);
-            setCopied(true);
-          }}
-        >
-          <Icon
-            source={!copied ? "clipboard" : "check"}
-            size={16}
-            color={!copied ? "#53516C" : "green"}
-          />
-        </Pressable>
-      </View>
-      <Text className="text-[#53516C] font-semibold mt-4">Balance</Text>
-      {balanceOfLoading ? (
-        <ActivityIndicator animating={true} color={"#C9B3F9"} />
-      ) : (
-        <Text className="text-white font-semibold mt-2 text-lg">
-          ${balance} ({balance} GHO)
-        </Text>
-      )}
-      <Text className="text-[#53516C] font-semibold mt-4 mb-2">Amount</Text>
-      <Text className="text-white mb-2">
-        This is the amount that you will send to the recipient.
-      </Text>
-      <View className="mb-2 text-white border-2 border-[#C9B3F9] px-2 py-3 rounded-md flex flex-row items-center justify-between">
-        <TextInput
-          value={amount}
-          onChangeText={(value) => {
-            if (isNaN(Number(value))) return setAmount("");
-            setAmount(value);
-          }}
-          autoCapitalize="none"
-          autoComplete="off"
-          autoCorrect={false}
-          className="placeholder-white min-w-[300px]"
-          keyboardType="numeric"
+
+        <AmountChooser
+          dollars={amount}
+          onSetDollars={setAmount}
+          showAmountAvailable
+          autoFocus
+          lagAutoFocus={false}
         />
-        <Text className="text-white font-bold">GHO</Text>
+        {balanceOfLoading ? (
+          <ActivityIndicator animating={true} color={"#C9B3F9"} />
+        ) : (
+          <Text className="text-gray-600 font-semibold">
+            ${balance} available
+          </Text>
+        )}
+        {needToBorrow && (
+          <>
+            <Spacer h={16} />
+            {canBorrow && (
+              <InfoBox
+                title="Insufficient balance, but..."
+                subtitle={`You can still borrow ${
+                  Number(amount) - Number(balance)
+                } GHO and proceed with the transaction.`}
+                variant="info"
+              ></InfoBox>
+            )}
+            {!canBorrow && (
+              <InfoBox
+                title="Insufficient balance, and..."
+                subtitle={`You don't have enough collateral to borrow ${
+                  Number(amount) - Number(balance)
+                } GHO and proceed with the transaction.`}
+                variant="warning"
+              ></InfoBox>
+            )}
+          </>
+        )}
       </View>
-      {Number(amount) > Number(balance) && !canBorrow && (
-        <Text className="text-red-500 text-xs">
-          Not enough collateral to borrow.
-        </Text>
-      )}
-      {Number(amount) <= 0 && (
-        <Text className="text-red-500 text-xs">Amount cannot be zero.</Text>
-      )}
       <SafeAreaView className="mt-auto">
         {transferLoading || loading ? (
           <ActivityIndicator animating={true} color={"#C9B3F9"} />
         ) : (
-          <AppButton
-            text={
-              needToBorrow
-                ? !canBorrow
-                  ? `Not enough collateral to borrow ${
-                      Number(amount) - Number(balance)
-                    } GHO`
-                  : `Borrow ${
-                      Number(amount) - Number(balance)
-                    } GHO and send ${amount} GHO`
-                : canSend
-                ? `Send ${amount} GHO`
-                : "Send"
-            }
-            onPress={() => sendTokens()}
-            variant={
-              needToBorrow && !canBorrow
-                ? "disabled"
-                : canSend
-                ? "primary"
-                : "disabled"
-            }
-          />
+          <View className="flex flex-row justify-between">
+            <View className="flex-1 mx-2">
+              <AppButton
+                text="Cancel"
+                onPress={() => {
+                  router.back();
+                }}
+                variant="ghost"
+              />
+            </View>
+            <View className="flex-1 mx-2">
+              <AppButton
+                text={"Send"}
+                onPress={() => sendTokens()}
+                variant={canSend || canBorrow ? "primary" : "disabled"}
+              />
+            </View>
+          </View>
         )}
       </SafeAreaView>
     </View>
