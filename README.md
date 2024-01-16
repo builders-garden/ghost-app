@@ -1,7 +1,7 @@
 # GHOst Wallet
 
 <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center">
-  <img src="./images/ghost.png" width="200" height="200" />
+  <img src="./assets/icon.png" width="200" height="200" />
   <p>
     <b>GHOst</b> is a native wallet for managing your GHO tokens.
   </p>
