@@ -4,11 +4,12 @@ import { Redirect, router } from "expo-router";
 import Avatar from "../../../components/avatar";
 import * as Clipboard from "expo-clipboard";
 import AppButton from "../../../components/app-button";
-import { useConnectedWallet } from "@thirdweb-dev/react-native";
+import { shortenAddress, useConnectedWallet } from "@thirdweb-dev/react-native";
 import * as WebBrowser from "expo-web-browser";
 import { sepolia } from "../../../constants/sepolia";
 import { useState } from "react";
 import { useUserStore } from "../../../store";
+import Toast from "react-native-toast-message";
 
 export default function Settings() {
   const signer = useConnectedWallet();
@@ -43,10 +44,21 @@ export default function Settings() {
                 <Text className="text-white font-semibold">
                   {user.username}
                 </Text>
+
                 <Pressable
-                  onPress={() => Clipboard.setStringAsync(user.username)}
+                  className="flex flex-row items-center space-x-2"
+                  onPress={() => {
+                    Clipboard.setStringAsync(user.username);
+                    Toast.show({
+                      type: "success",
+                      text1: "Copied!",
+                    });
+                  }}
                 >
-                  <Icon source="clipboard" size={16} color="#FFF" />
+                  <Text className="text-[#53516C] mr-2">
+                    {shortenAddress(user.address)}
+                  </Text>
+                  <Icon source="clipboard" size={16} color="#53516C" />
                 </Pressable>
               </View>
               <Text className="text-[#53516C] font-semibold">

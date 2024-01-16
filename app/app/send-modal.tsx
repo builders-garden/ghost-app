@@ -154,7 +154,7 @@ export default function SendModal() {
         <Text className="text-white text-lg text-center font-semibold">
           {sendUser?.username}
         </Text>
-        <Text className="text-gray-600 text-ellipsis">
+        <Text className="text-[#53516C] text-ellipsis">
           {shortenAddress(sendUser?.address, false)}
         </Text>
 
@@ -168,7 +168,7 @@ export default function SendModal() {
         {balanceOfLoading ? (
           <ActivityIndicator animating={true} color={"#C9B3F9"} />
         ) : (
-          <Text className="text-gray-600 font-semibold">
+          <Text className="text-[#53516C] font-semibold">
             ${balance} available
           </Text>
         )}
