@@ -1,6 +1,7 @@
 import {
   useAddress,
   useContract,
+  useContractRead,
   useContractWrite,
 } from "@thirdweb-dev/react-native";
 import { useEffect, useState } from "react";
@@ -22,6 +23,7 @@ import {
   USDT_ADDRESS,
 } from "../constants/sepolia";
 import { ethers } from "ethers";
+import Toast from "react-native-toast-message";
 
 const generatePassword = () => {
   const chars =
@@ -48,17 +50,25 @@ export default function Onboarding() {
     usdcContract,
     "approve"
   );
+  const { data: approvalData } = useContractRead(usdcContract, "allowance", [
+    address,
+    AAVE_POOL_ADDRESS,
+  ]);
   const { contract: usdtContract } = useContract(USDT_ADDRESS);
   const { mutateAsync: approveUSDT } = useContractWrite(
     usdtContract,
     "approve"
   );
+  const { data: approvalData2 } = useContractRead(usdtContract, "allowance", [
+    address,
+    AAVE_POOL_ADDRESS,
+  ]);
 
   useEffect(() => {
-    if (address) {
+    if (address && approvalData && approvalData2) {
       step === 0 && createAccount(address);
     }
-  }, [step, address]);
+  }, [step, address, approvalData, approvalData2]);
 
   const createAccount = async (address: string) => {
     let password = await SecureStore.getItemAsync(`password-${address}`);
@@ -83,13 +93,27 @@ export default function Onboarding() {
       }
     }
 
-    const { receipt: usdcReceipt } = await approveUSDC({
-      args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
-    });
+    if (approvalData.eq(0)) {
+      const { receipt: usdcReceipt } = await approveUSDC({
+        args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
+      });
+      Toast.show({
+        type: "success",
+        text1: "Success!",
+        text2: "Approved USDC spending.",
+      });
+    }
 
-    const { receipt: usdtReceipt } = await approveUSDT({
-      args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
-    });
+    if (approvalData2.eq(0)) {
+      const { receipt: usdtReceipt } = await approveUSDT({
+        args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
+      });
+      Toast.show({
+        type: "success",
+        text1: "Success!",
+        text2: "Approved USDT spending.",
+      });
+    }
 
     setTimeout(() => {
       setStep(step + 1);

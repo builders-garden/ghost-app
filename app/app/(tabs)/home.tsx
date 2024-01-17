@@ -40,21 +40,13 @@ export default function Home() {
   const [refreshing, setRefreshing] = React.useState(false);
   const user = useUserStore((state) => state.user);
   const { contract } = useContract(GHO_SEPOLIA_ADDRESS);
-  const { data: balanceData, refetch: balanceRefetch } = useContractRead(
-    contract,
-    "balanceOf",
-    [user?.address]
-  );
+  const { data: balanceData = BigNumber.from(0), refetch: balanceRefetch } =
+    useContractRead(contract, "balanceOf", [user?.address]);
   const transactions = useTransactionsStore((state) => state.transactions);
   const setTransactions = useTransactionsStore(
     (state) => state.setTransactions
   );
-  const balance = balanceData
-    ? (balanceData as BigNumber)
-        .div(BigNumber.from(10).pow(18))
-        .toNumber()
-        .toFixed(2)
-    : (0).toFixed(2);
+  const balance = (balanceData / 10 ** 18).toFixed(2);
 
   const onRefresh = async () => {
     setRefreshing(true);
