@@ -6,25 +6,29 @@ import {
   useContract,
   useContractRead,
   useContractWrite,
+  useSDK,
 } from "@thirdweb-dev/react-native";
 import { useUserStore } from "../../store";
-import { GHO_SEPOLIA_ADDRESS, VAULT_ADDRESS } from "../../constants/sepolia";
-import { BigNumber } from "ethers";
+import {
+  GHO_SEPOLIA_ADDRESS,
+  VAULT_ABI,
+  VAULT_ADDRESS,
+} from "../../constants/sepolia";
+import { BigNumber, ethers } from "ethers";
 import { useState } from "react";
 import AppButton from "../../components/app-button";
 import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function PocketInfoModal() {
+  const sdk = useSDK();
   const user = useUserStore((state) => state.user);
   const { contract: ghoContract } = useContract(GHO_SEPOLIA_ADDRESS);
   const { data: balanceData = BigNumber.from(0), isLoading: balanceOfLoading } =
     useContractRead(ghoContract, "balanceOf", [user?.address]);
-  const balance = balanceData
-    .div(BigNumber.from(10).pow(18))
-    .toNumber()
-    .toFixed(2);
-  const { contract: vaultContract } = useContract(VAULT_ADDRESS);
+  const balance = (balanceData / 10 ** 18).toFixed(2);
+  const { contract: vaultContract } = useContract(VAULT_ADDRESS, VAULT_ABI);
+
   const { data: totalShares = BigNumber.from(0) } = useContractRead(
     vaultContract,
     "totalAssets"
@@ -42,8 +46,16 @@ export default function PocketInfoModal() {
   const { data: vaultBalance = BigNumber.from(0) } = useContractRead(
     ghoContract,
     "balanceOf",
-    [vaultContract?.getAddress()]
+    [VAULT_ADDRESS]
   );
+  const { mutateAsync: approve, isLoading: isApproving } = useContractWrite(
+    ghoContract,
+    "approve"
+  );
+  const { data: approvalData } = useContractRead(ghoContract, "allowance", [
+    user?.address,
+    VAULT_ADDRESS,
+  ]);
   const [depositAmount, setDepositAmount] = useState("0");
   const { mutateAsync: deposit, isLoading: isDepositing } = useContractWrite(
     vaultContract,
@@ -70,7 +82,18 @@ export default function PocketInfoModal() {
         BigNumber.from(10).pow(18)
       );
 
-      const { receipt } = await deposit({ args: [depositAmountInWei] });
+      if (approvalData.eq(0)) {
+        console.log("approving spending");
+        const { receipt } = await approve({
+          args: [VAULT_ADDRESS, ethers.constants.MaxUint256],
+        });
+      }
+
+      console.log(vaultContract?.abi);
+
+      const { receipt } = await deposit({
+        args: [depositAmountInWei, user?.address],
+      });
 
       if (receipt) {
         setDepositAmount("");
@@ -96,7 +119,9 @@ export default function PocketInfoModal() {
         BigNumber.from(10).pow(18)
       );
 
-      const { receipt } = await withdraw({ args: [withdrawAmountInWei] });
+      const { receipt } = await withdraw({
+        args: [withdrawAmountInWei, user?.address, user?.address],
+      });
 
       if (receipt) {
         setWithdrawAmount("");
@@ -143,9 +168,6 @@ export default function PocketInfoModal() {
         />
       </Appbar.Header>
       <View className="flex flex-col px-4 mt-2 bg-[#201F2D]">
-        {/* <Text className="text-white text-center text-lg leading-5 mt-4">
-          Here you can deposit or withdraw tokens from the GHO Vault.
-        </Text> */}
         <View className="px-14 pb-8">
           <Text className="text-white font-semibold text-center mb-4">
             Vault balance
@@ -209,7 +231,7 @@ export default function PocketInfoModal() {
           <Text className="text-white font-bold">GHO</Text>
         </View>
         <View className="mt-2">
-          {isDepositing ? (
+          {isDepositing || isApproving ? (
             <ActivityIndicator animating={true} color={"#C9B3F9"} />
           ) : (
             <AppButton
