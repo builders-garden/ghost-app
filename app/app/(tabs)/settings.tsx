@@ -67,7 +67,7 @@ export default function Settings() {
             </View>
           </View>
           <AppButton
-            text="VIEW ACCOUNT ON EXPLORER"
+            text="VIEW ON ON EXPLORER"
             onPress={async () => {
               await WebBrowser.openBrowserAsync(
                 `${sepolia.explorers[0].url}/address/${user?.address}`

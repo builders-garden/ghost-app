@@ -1,7 +1,7 @@
 import { StyleSheet, Text } from "react-native";
 
 import Spacer from "./spacer";
-import { amountToDollars } from "../app/utils";
+import { amountToDollars } from "../lib/utils";
 
 export const amountSeparator = ".";
 
