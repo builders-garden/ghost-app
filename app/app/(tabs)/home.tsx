@@ -4,7 +4,7 @@ import {
   useContract,
   useContractRead,
 } from "@thirdweb-dev/react-native";
-import { Redirect } from "expo-router";
+import { Link, Redirect } from "expo-router";
 import {
   SafeAreaView,
   View,
@@ -30,9 +30,10 @@ import { useTransactionsStore } from "../../../store/use-transactions-store";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { firebaseFirestore } from "../../../firebaseConfig";
 import { DBTransaction } from "../../../store/interfaces";
-import TimeAgo from "@andordavoti/react-native-timeago";
-import * as WebBrowser from "expo-web-browser";
 import Toast from "react-native-toast-message";
+import TransactionItem from "../../../components/transaction-item";
+import TransactionsList from "../../../components/transactions-list";
+import { getUserTransactions } from "../../../lib/firestore";
 
 export default function Home() {
   const signer = useConnectedWallet();
@@ -117,7 +118,9 @@ export default function Home() {
       <View className="flex flex-col px-4 mt-2 bg-[#201F2D]">
         <View className="flex flex-row items-center justify-between">
           <View className="flex flex-row items-center space-x-4 pl-2">
-            <Avatar name={user.username.charAt(0).toUpperCase()} />
+            <Link href={"./settings"}>
+              <Avatar name={user.username.charAt(0).toUpperCase()} />
+            </Link>
             <Text className="text-[#C9B3F9] font-black text-3xl italic">
               GHOst
             </Text>
@@ -165,72 +168,13 @@ export default function Home() {
             </View>
           </ImageBackground>
         </View>
-        <Text className="text-[#53516C] font-semibold mt-4 mb-2">
-          Transaction History
-        </Text>
-        <Divider />
-        {refreshing && transactions.length === 0 && (
-          <View className="mt-4">
-            <ActivityIndicator animating={true} color={"#C9B3F9"} />
-          </View>
-        )}
-        {transactions.length === 0 && !refreshing && (
-          <Text className="mt-4 text-white">
-            No recent transactions available.
-          </Text>
-        )}
-        {transactions.length > 0 && (
-          <ScrollView className="h-full">
-            {transactions.map((transaction, index) => {
-              const { from, toUsername, fromUsername, createdAt, txHash } =
-                transaction;
-              const amount = parseFloat(transaction.amount);
-              const isFrom = from === user?.address;
-              return (
-                <Pressable
-                  key={`event-${index}`}
-                  onPress={async () => {
-                    await WebBrowser.openBrowserAsync(
-                      `${sepolia.explorers[0].url}/tx/${txHash}`
-                    );
-                  }}
-                >
-                  <View className="flex flex-row items-center justify-between py-4">
-                    <View className="flex flex-row items-center space-x-4">
-                      <Avatar
-                        name={(isFrom ? toUsername : fromUsername)
-                          .charAt(0)
-                          .toUpperCase()}
-                      />
-                      <View className="flex flex-col">
-                        <Text className="text-white font-semibold text-lg">
-                          {isFrom ? toUsername : fromUsername}
-                        </Text>
-
-                        <Text className="text-[#53516C]">
-                          Click to view detail
-                        </Text>
-                      </View>
-                    </View>
-                    <View className="flex flex-col items-end justify-center">
-                      <Text
-                        className={`${
-                          !isFrom ? "text-emerald-500" : "text-red-500"
-                        } font-semibold text-lg`}
-                      >
-                        {!isFrom ? "+" : "-"} ${amount.toFixed(2)}
-                      </Text>
-                      <Text className="text-[#53516C]">
-                        <TimeAgo dateTo={new Date(createdAt)} />
-                      </Text>
-                    </View>
-                  </View>
-                  <Divider />
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        )}
+        <TransactionsList
+          transactions={transactions}
+          loading={refreshing}
+          setLoading={setRefreshing}
+          setTransactions={setTransactions}
+          getTransactions={getUserTransactions}
+        />
       </View>
       <LogoutModal visible={showModal} hideModal={() => setShowModal(false)} />
     </SafeAreaView>

@@ -1,5 +1,10 @@
 import { providers } from "ethers";
 
+export interface SimpleUser {
+  address: string;
+  username: string;
+}
+
 export interface DBUser {
   address: string;
   // smartWalletAddress: string;

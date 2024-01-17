@@ -75,11 +75,14 @@ export default function AddMoneyModal() {
         </Pressable>
       </View>
       {qrText && (
-        <View className="flex items-center justify-center mt-8">
+        <View className="flex flex-col items-center justify-center mt-8">
           <Image
             className="h-[300px] w-[300px]"
             source={{ uri: `data:image/png;base64,${qrText}` }}
           />
+          <Text className="text-white font-semibold mt-4">
+            Scan QR code to receive money
+          </Text>
         </View>
       )}
     </View>

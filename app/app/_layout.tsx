@@ -28,6 +28,10 @@ export default function AppLayout() {
         name="vault-modal"
         options={{ presentation: "modal", headerShown: false }}
       />
+      <Stack.Screen
+        name="profile-modal"
+        options={{ presentation: "fullScreenModal", headerShown: false }}
+      />
     </Stack>
   );
 }
