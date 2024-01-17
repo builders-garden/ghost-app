@@ -25,7 +25,6 @@ import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function Home() {
   const signer = useConnectedWallet();
-  const [showModal, setShowModal] = React.useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
   const user = useUserStore((state) => state.user);
   const { contract } = useContract(GHO_SEPOLIA_ADDRESS);
@@ -164,7 +163,7 @@ export default function Home() {
           getTransactions={getUserTransactions}
         />
       </View>
-      <LogoutModal visible={showModal} hideModal={() => setShowModal(false)} />
+      
     </SafeAreaView>
   );
 }

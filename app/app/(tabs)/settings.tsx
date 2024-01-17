@@ -11,10 +11,11 @@ import { useState } from "react";
 import { useUserStore } from "../../../store";
 import React from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
-
+import LogoutModal from "../../../components/modals/logout-modal";
 
 export default function Settings() {
   const signer = useConnectedWallet();
+  const [showModal, setShowModal] = React.useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
   const [copied, setCopied] = React.useState(false);
   const user = useUserStore((state) => state.user);
@@ -107,10 +108,19 @@ export default function Settings() {
               variant="primary"
             />
           </View>
-          <Text className="text-[#C9B3F9] text-center font-semibold mt-8">
+          <Text
+            onPress={() => {
+              setShowModal(true);
+            }}
+            className="text-[#C9B3F9] text-center font-semibold mt-8"
+          >
             LOGOUT
           </Text>
         </View>
+        <LogoutModal
+          visible={showModal}
+          hideModal={() => setShowModal(false)}
+        />
       </View>
     </>
   );

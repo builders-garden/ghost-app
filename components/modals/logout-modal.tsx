@@ -3,6 +3,7 @@ import { Text, View } from "react-native";
 import AppButton from "../app-button";
 import { useDisconnect } from "@thirdweb-dev/react-native";
 import { firebaseAuth } from "../../firebaseConfig";
+import Spacer from "../spacer";
 
 export default function LogoutModal({
   visible,
@@ -23,10 +24,19 @@ export default function LogoutModal({
             You will need to login again if confirmed.
           </Text>
           <AppButton
-            text="Confirm logout"
+            text="CONFIRM LOGOUT"
+            variant="ghost"
             onPress={async () => {
               await firebaseAuth.signOut();
               await disconnect();
+            }}
+          />
+          <Spacer h={16} />
+          <AppButton
+            text="CANCEL"
+            variant="primary"
+            onPress={() => {
+              hideModal();
             }}
           />
         </View>
