@@ -1,7 +1,8 @@
 import { Link, router } from "expo-router";
 import { ScrollView, Text } from "react-native";
-import { Appbar, Icon } from "react-native-paper";
+import { Appbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function PocketInfoModal() {
   const isPresented = router.canGoBack();
@@ -22,7 +23,7 @@ export default function PocketInfoModal() {
           titleStyle={{ fontWeight: "bold" }}
         />
         <Appbar.Action
-          icon={() => <Icon source="close" size={24} color="#FFF" />}
+          icon={() => <Icon name="close" size={24} color="#FFF" />}
           onPress={() => {
             router.back();
           }}

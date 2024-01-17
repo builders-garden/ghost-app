@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Switch } from "react-native";
-import { Appbar, Icon } from "react-native-paper";
+import { Appbar } from "react-native-paper";
 import { Redirect, router } from "expo-router";
 import Avatar from "../../../components/avatar";
 import * as Clipboard from "expo-clipboard";
@@ -9,11 +9,14 @@ import * as WebBrowser from "expo-web-browser";
 import { sepolia } from "../../../constants/sepolia";
 import { useState } from "react";
 import { useUserStore } from "../../../store";
-import Toast from "react-native-toast-message";
+import React from "react";
+import Icon from "react-native-vector-icons/FontAwesome";
+
 
 export default function Settings() {
   const signer = useConnectedWallet();
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [copied, setCopied] = React.useState(false);
   const user = useUserStore((state) => state.user);
   const [isEnabled, setIsEnabled] = useState(user?.rounding);
 
@@ -49,16 +52,20 @@ export default function Settings() {
                   className="flex flex-row items-center space-x-2"
                   onPress={() => {
                     Clipboard.setStringAsync(user.username);
-                    Toast.show({
-                      type: "success",
-                      text1: "Copied!",
-                    });
+                    setCopied(true);
+                    setTimeout(() => {
+                      setCopied(false);
+                    }, 1500);
                   }}
                 >
                   <Text className="text-[#53516C] mr-2">
                     {shortenAddress(user.address)}
                   </Text>
-                  <Icon source="clipboard" size={16} color="#53516C" />
+                  <Icon
+                    name={!copied ? "clipboard" : "check"}
+                    size={16}
+                    color={!copied ? "#53516C" : "green"}
+                  />
                 </Pressable>
               </View>
               <Text className="text-[#53516C] font-semibold">
@@ -100,6 +107,9 @@ export default function Settings() {
               variant="primary"
             />
           </View>
+          <Text className="text-[#C9B3F9] text-center font-semibold mt-8">
+            LOGOUT
+          </Text>
         </View>
       </View>
     </>

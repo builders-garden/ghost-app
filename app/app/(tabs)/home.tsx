@@ -5,20 +5,8 @@ import {
   useContractRead,
 } from "@thirdweb-dev/react-native";
 import { Link, Redirect } from "expo-router";
-import {
-  SafeAreaView,
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  ImageBackground,
-} from "react-native";
-import {
-  ActivityIndicator,
-  Divider,
-  Icon,
-  IconButton,
-} from "react-native-paper";
+import { SafeAreaView, View, Text, ImageBackground } from "react-native";
+import { ActivityIndicator, Divider, IconButton } from "react-native-paper";
 import Avatar from "../../../components/avatar";
 import CircularButton from "../../../components/circular-button";
 import LogoutModal from "../../../components/modals/logout-modal";
@@ -31,9 +19,9 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { firebaseFirestore } from "../../../firebaseConfig";
 import { DBTransaction } from "../../../store/interfaces";
 import Toast from "react-native-toast-message";
-import TransactionItem from "../../../components/transaction-item";
 import TransactionsList from "../../../components/transactions-list";
 import { getUserTransactions } from "../../../lib/firestore";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function Home() {
   const signer = useConnectedWallet();
@@ -136,7 +124,7 @@ export default function Home() {
           <View className="flex flex-row items-center">
             {!refreshing ? (
               <IconButton
-                icon={() => <Icon source="refresh" color="#FFF" size={24} />}
+                icon={() => <Icon name="refresh" color="#FFF" size={24} />}
                 onPress={() => onRefresh()}
               />
             ) : (
@@ -144,10 +132,10 @@ export default function Home() {
                 <ActivityIndicator animating={true} color={"#FFF"} />
               </View>
             )}
-            <IconButton
+            {/*<IconButton
               icon={() => <Icon source="sign-out" color="#FFF" size={24} />}
               onPress={() => setShowModal(true)}
-            />
+            />*/}
           </View>
         </View>
         <View className="p-14">
@@ -170,7 +158,7 @@ export default function Home() {
               />
               <CircularButton
                 text="Send"
-                icon="send"
+                icon="paper-plane"
                 onPress={() => router.push("/app/send")}
               />
             </View>

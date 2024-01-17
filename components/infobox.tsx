@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Text, View } from "react-native";
-import { Icon } from "react-native-paper";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export function InfoBox({
   title,
@@ -20,7 +20,11 @@ export function InfoBox({
       className={`${backgroundColor} rounded-lg flex flex-row space-x-4 p-4 mx-2`}
     >
       <View className="flex-none">
-        <Icon source={variant} color={iconColor} size={24} />
+        <Icon
+          name={variant === "info" ? "info-circle" : "warning"}
+          color={iconColor}
+          size={24}
+        />
       </View>
       <View className="flex-1 flex flex-col justify-start items-start space-y-2">
         <Text className={`font-bold ${textColor} text-left`}>{title}</Text>

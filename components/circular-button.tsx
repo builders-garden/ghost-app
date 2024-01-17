@@ -1,5 +1,5 @@
 import { Pressable, View, Text } from "react-native";
-import { Icon } from "react-native-paper";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function CircularButton({
   text,
@@ -14,7 +14,7 @@ export default function CircularButton({
     <Pressable onPress={onPress}>
       <View className="flex flex-col items-center justify-center space-y-2">
         <View className="bg-[#C9B3F9] rounded-full w-16 h-16 flex items-center justify-center">
-          <Icon source={icon} color="#201F2D" size={24} />
+          <Icon name={icon} color="#201F2D" size={24} />
         </View>
         <Text className="text-white font-semibold">{text}</Text>
       </View>

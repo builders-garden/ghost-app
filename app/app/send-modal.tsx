@@ -1,9 +1,8 @@
-import { Pressable, TextInput, View } from "react-native";
+import { View } from "react-native";
 import { Link, router } from "expo-router";
-import { ActivityIndicator, Appbar, Icon } from "react-native-paper";
+import { ActivityIndicator, Appbar } from "react-native-paper";
 import { Text } from "react-native";
 import { useSendStore, useUserStore } from "../../store";
-import * as Clipboard from "expo-clipboard";
 import { useState } from "react";
 import {
   Box,
@@ -29,6 +28,7 @@ import { AmountChooser } from "../../components/amount-chooser";
 import Avatar from "../../components/avatar";
 import { InfoBox } from "../../components/infobox";
 import Spacer from "../../components/spacer";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function SendModal() {
   const [copied, setCopied] = useState(false);
@@ -140,7 +140,7 @@ export default function SendModal() {
           titleStyle={{ fontWeight: "bold" }}
         />
         <Appbar.Action
-          icon={() => <Icon source="close" size={24} color="#FFF" />}
+          icon={() => <Icon name="close" size={24} color="#FFF" />}
           onPress={() => {
             setSendUser(undefined);
             router.back();

@@ -1,6 +1,6 @@
 import { Link, router } from "expo-router";
 import { View, Text } from "react-native";
-import { Appbar, Icon } from "react-native-paper";
+import { Appbar } from "react-native-paper";
 import Avatar from "../../components/avatar";
 import { useProfileStore } from "../../store/use-profile-store";
 import { shortenAddress } from "@thirdweb-dev/react-native";
@@ -12,6 +12,7 @@ import TransactionsList from "../../components/transactions-list";
 import { getUserTransactions } from "../../lib/firestore";
 import React from "react";
 import Spacer from "../../components/spacer";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function ProfileModal() {
   const isPresented = router.canGoBack();
@@ -39,7 +40,7 @@ export default function ProfileModal() {
           titleStyle={{ fontWeight: "bold" }}
         />
         <Appbar.Action
-          icon={() => <Icon source="close" size={24} color="#FFF" />}
+          icon={() => <Icon name="close" size={24} color="#FFF" />}
           onPress={() => {
             setProfileUser(undefined);
             router.back();

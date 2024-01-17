@@ -1,6 +1,6 @@
 import { Link, router } from "expo-router";
 import { View, Text, TextInput } from "react-native";
-import { ActivityIndicator, Appbar, Icon } from "react-native-paper";
+import { ActivityIndicator, Appbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   useContract,
@@ -13,6 +13,7 @@ import { BigNumber } from "ethers";
 import { useState } from "react";
 import AppButton from "../../components/app-button";
 import Toast from "react-native-toast-message";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function PocketInfoModal() {
   const user = useUserStore((state) => state.user);
@@ -133,7 +134,7 @@ export default function PocketInfoModal() {
           titleStyle={{ fontWeight: "bold" }}
         />
         <Appbar.Action
-          icon={() => <Icon source="close" size={24} color="#FFF" />}
+          icon={() => <Icon name="close" size={24} color="#FFF" />}
           onPress={() => {
             router.back();
           }}

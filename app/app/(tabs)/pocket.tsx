@@ -1,6 +1,6 @@
 import { Redirect, router } from "expo-router";
 import { View, Text, Image, Pressable } from "react-native";
-import { Appbar, Icon } from "react-native-paper";
+import { Appbar } from "react-native-paper";
 import { useUserStore } from "../../../store";
 import AppButton from "../../../components/app-button";
 import { useContract, useContractRead } from "@thirdweb-dev/react-native";
@@ -12,6 +12,7 @@ import {
   VAULT_ADDRESS,
 } from "../../../constants/sepolia";
 import { BigNumber } from "ethers";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function Pocket() {
   const user = useUserStore((state) => state.user);
@@ -71,7 +72,7 @@ export default function Pocket() {
           titleStyle={{ fontWeight: "bold" }}
         />
         <Appbar.Action
-          icon={() => <Icon source="info-circle" size={24} color="#FFF" />}
+          icon={() => <Icon name="info-circle" size={24} color="#FFF" />}
           onPress={() => router.push("/app/pocket-info-modal")}
         />
       </Appbar.Header>
@@ -134,7 +135,7 @@ export default function Pocket() {
               <Text className="text-lg text-emerald-500 font-semibold">3%</Text>
               <Text className="text-[#53516C]">APY</Text>
             </View>
-            <Icon source="chevron-right" size={16} color="#C9B3F9" />
+            <Icon name="chevron-right" size={16} color="#C9B3F9" />
           </View>
         </Pressable>
         <View className="my-8 flex items-center w-full">

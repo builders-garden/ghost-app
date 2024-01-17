@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { View } from "react-native";
-import { Icon } from "react-native-paper";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 export default function AppTabsLayout() {
   return (
@@ -16,7 +16,7 @@ export default function AppTabsLayout() {
         options={{
           tabBarIcon: ({ focused }) => (
             <Icon
-              source="home"
+              name="home"
               color={focused ? "#C9B3F9" : "#53516C"}
               size={24}
             />
@@ -33,7 +33,8 @@ export default function AppTabsLayout() {
         options={{
           tabBarIcon: ({ focused }) => (
             <Icon
-              source="send"
+              name="paper-plane"
+              solid={true}
               color={focused ? "#C9B3F9" : "#53516C"}
               size={24}
             />
@@ -50,7 +51,7 @@ export default function AppTabsLayout() {
         options={{
           tabBarIcon: ({ focused }) => (
             <Icon
-              source="briefcase"
+              name="piggy-bank"
               color={focused ? "#C9B3F9" : "#53516C"}
               size={24}
             />
@@ -67,7 +68,7 @@ export default function AppTabsLayout() {
         options={{
           tabBarIcon: ({ focused }) => (
             <Icon
-              source="cog"
+              name="cog"
               color={focused ? "#C9B3F9" : "#53516C"}
               size={24}
             />

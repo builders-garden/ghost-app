@@ -11,10 +11,11 @@ import {
 } from "firebase/firestore";
 import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
-import { Appbar, Icon, Searchbar } from "react-native-paper";
+import { Appbar, Searchbar } from "react-native-paper";
 import { firebaseFirestore } from "../../../firebaseConfig";
 import Avatar from "../../../components/avatar";
 import { useSendStore, useUserStore } from "../../../store";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function Send() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -103,7 +104,7 @@ export default function Send() {
                       {result.username}
                     </Text>
                   </View>
-                  <Icon source="chevron-right" size={16} color="#FFF" />
+                  <Icon name="chevron-right" size={16} color="#FFF" />
                 </Pressable>
               ))}
             </View>

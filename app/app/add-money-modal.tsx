@@ -1,12 +1,13 @@
 import { Pressable, View, Image } from "react-native";
 import { Link, router } from "expo-router";
-import { Appbar, Icon } from "react-native-paper";
+import { Appbar } from "react-native-paper";
 import { Text } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import React, { useEffect } from "react";
 import RNQRGenerator from "rn-qr-generator";
 import { useUserStore } from "../../store";
 import { shortenAddress } from "@thirdweb-dev/react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function AddMoneyModal() {
   const isPresented = router.canGoBack();
@@ -45,7 +46,7 @@ export default function AddMoneyModal() {
           titleStyle={{ fontWeight: "bold" }}
         />
         <Appbar.Action
-          icon={() => <Icon source="close" size={24} color="#FFF" />}
+          icon={() => <Icon name="close" size={24} color="#FFF" />}
           onPress={() => router.back()}
           color="#fff"
           size={20}
@@ -55,7 +56,7 @@ export default function AddMoneyModal() {
         Add money to account
       </Text>
       <Text className="text-white font-semibold mt-2">
-        Send GHO, USDC, USDT or DAI to your address below.
+        Send GHO, USDC, USDT to your address below.
       </Text>
       <View className="bg-[#292836] rounded-lg flex flex-row justify-between mt-4 px-4 py-2">
         <Text className="text-[#53516C] text-ellipsis">
@@ -65,10 +66,13 @@ export default function AddMoneyModal() {
           onPress={async () => {
             await Clipboard.setStringAsync(user!.address);
             setCopied(true);
+            setTimeout(() => {
+              setCopied(false);
+            }, 1500);
           }}
         >
           <Icon
-            source={!copied ? "clipboard" : "check"}
+            name={!copied ? "clipboard" : "check"}
             size={16}
             color={!copied ? "#53516C" : "green"}
           />

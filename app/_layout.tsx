@@ -14,7 +14,7 @@ import Toast, {
   ToastConfig,
 } from "react-native-toast-message";
 //@ts-ignore
-import AwesomeIcon from "react-native-vector-icons/FontAwesome";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const toastConfig: ToastConfig = {
   success: (props) => (
@@ -52,7 +52,7 @@ export default function AppLayout() {
     <>
       <PaperProvider
         settings={{
-          icon: (props) => <AwesomeIcon {...props} />,
+          icon: (props) => <Icon {...props} />,
         }}
       >
         <ThirdwebProvider

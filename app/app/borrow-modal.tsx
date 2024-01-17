@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { Link, router } from "expo-router";
-import { ActivityIndicator, Appbar, Icon } from "react-native-paper";
+import { ActivityIndicator, Appbar } from "react-native-paper";
 import { Text } from "react-native";
 import { useUserStore } from "../../store";
 import {
@@ -17,6 +17,7 @@ import AppButton from "../../components/app-button";
 import { doc, setDoc } from "firebase/firestore";
 import { firebaseFirestore } from "../../firebaseConfig";
 import Toast from "react-native-toast-message";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function BorrowModal() {
   const isPresented = router.canGoBack();
@@ -134,7 +135,7 @@ export default function BorrowModal() {
           titleStyle={{ fontWeight: "bold" }}
         />
         <Appbar.Action
-          icon={() => <Icon source="close" size={24} color="#FFF" />}
+          icon={() => <Icon name="close" size={24} color="#FFF" />}
           onPress={() => router.back()}
           color="#fff"
           size={20}
