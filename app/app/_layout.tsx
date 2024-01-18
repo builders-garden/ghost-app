@@ -32,6 +32,10 @@ export default function AppLayout() {
         name="profile-modal"
         options={{ presentation: "fullScreenModal", headerShown: false }}
       />
+      <Stack.Screen
+        name="qrcode-modal"
+        options={{ presentation: "fullScreenModal", headerShown: false }}
+      />
     </Stack>
   );
 }
