@@ -1,36 +1,18 @@
-import { Pressable, View, Image } from "react-native";
+import { Pressable, View, Text } from "react-native";
 import { Link, router } from "expo-router";
 import { Appbar } from "react-native-paper";
-import { Text } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import React, { useEffect } from "react";
 import RNQRGenerator from "rn-qr-generator";
 import { useUserStore } from "../../store";
 import { shortenAddress } from "@thirdweb-dev/react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import QRCode from "../../components/qrcode";
 
 export default function AddMoneyModal() {
   const isPresented = router.canGoBack();
   const user = useUserStore((state) => state.user);
   const [copied, setCopied] = React.useState(false);
-  const [qrText, setQRText] = React.useState("");
-
-  useEffect(() => {
-    if (user) {
-      RNQRGenerator.generate({
-        value: user?.address,
-        height: 400,
-        width: 400,
-        correctionLevel: "H",
-        base64: true,
-      })
-        .then((response) => {
-          const { base64 } = response;
-          base64 && setQRText(base64);
-        })
-        .catch((error) => console.error(error));
-    }
-  }, [user]);
 
   return (
     <View className="flex-1 flex-col px-4 bg-[#201F2D]">
@@ -78,17 +60,13 @@ export default function AddMoneyModal() {
           />
         </Pressable>
       </View>
-      {qrText && (
-        <View className="flex flex-col items-center justify-center mt-8">
-          <Image
-            className="h-[300px] w-[300px]"
-            source={{ uri: `data:image/png;base64,${qrText}` }}
-          />
+      <QRCode
+        children={
           <Text className="text-white font-semibold mt-4">
             Scan QR code to receive money
           </Text>
-        </View>
-      )}
+        }
+      />
     </View>
   );
 }

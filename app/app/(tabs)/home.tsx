@@ -112,7 +112,7 @@ export default function Home() {
               GHOst
             </Text>
           </View>
-          <View className="flex flex-row items-center">
+          <View className="flex flex-row items-center space-x-0">
             {!refreshing ? (
               <IconButton
                 icon={() => <Icon name="refresh" color="#FFF" size={24} />}
@@ -123,10 +123,12 @@ export default function Home() {
                 <ActivityIndicator animating={true} color={"#FFF"} />
               </View>
             )}
-            {/*<IconButton
-              icon={() => <Icon source="sign-out" color="#FFF" size={24} />}
-              onPress={() => setShowModal(true)}
-            />*/}
+            {
+              <IconButton
+                icon={() => <Icon name="qrcode" color="#FFF" size={24} />}
+                onPress={() => router.push("/app/qrcode-modal")}
+              />
+            }
           </View>
         </View>
         <View className="p-14">
@@ -163,7 +165,6 @@ export default function Home() {
           getTransactions={getUserTransactions}
         />
       </View>
-      
     </SafeAreaView>
   );
 }
