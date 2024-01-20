@@ -123,12 +123,10 @@ export default function Home() {
                 <ActivityIndicator animating={true} color={"#FFF"} />
               </View>
             )}
-            {
-              <IconButton
+            {/*<IconButton
                 icon={() => <Icon name="qrcode" color="#FFF" size={24} />}
                 onPress={() => router.push("/app/qrcode-modal")}
-              />
-            }
+              />*/}
           </View>
         </View>
         <View className="p-14">

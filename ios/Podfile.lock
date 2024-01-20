@@ -9,15 +9,23 @@ PODS:
   - DoubleConversion (1.1.6)
   - EXApplication (5.3.1):
     - ExpoModulesCore
+  - EXBarCodeScanner (12.7.0):
+    - EXImageLoader
+    - ExpoModulesCore
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - EXConstants (14.4.2):
     - ExpoModulesCore
   - EXFileSystem (15.4.5):
     - ExpoModulesCore
   - EXFont (11.4.0):
     - ExpoModulesCore
+  - EXImageLoader (4.4.0):
+    - ExpoModulesCore
+    - React-Core
   - EXNotifications (0.20.1):
     - ExpoModulesCore
-  - Expo (49.0.21):
+  - Expo (49.0.22):
     - ExpoModulesCore
   - ExpoClipboard (4.3.1):
     - ExpoModulesCore
@@ -31,7 +39,7 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (12.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (1.5.12):
+  - ExpoModulesCore (1.5.13):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - React-NativeModulesApple
@@ -554,15 +562,22 @@ PODS:
   - ZXingObjC (3.6.9):
     - ZXingObjC/All (= 3.6.9)
   - ZXingObjC/All (3.6.9)
+  - ZXingObjC/Core (3.6.9)
+  - ZXingObjC/OneD (3.6.9):
+    - ZXingObjC/Core
+  - ZXingObjC/PDF417 (3.6.9):
+    - ZXingObjC/Core
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - "CoinbaseWalletSDKExpo (from `../node_modules/@coinbase/wallet-mobile-sdk/ios`)"
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../node_modules/expo-application/ios`)
+  - EXBarCodeScanner (from `../node_modules/expo-barcode-scanner/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
+  - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
   - EXNotifications (from `../node_modules/expo-notifications/ios`)
   - Expo (from `../node_modules/expo`)
   - ExpoClipboard (from `../node_modules/expo-clipboard/ios`)
@@ -654,12 +669,16 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXApplication:
     :path: "../node_modules/expo-application/ios"
+  EXBarCodeScanner:
+    :path: "../node_modules/expo-barcode-scanner/ios"
   EXConstants:
     :path: "../node_modules/expo-constants/ios"
   EXFileSystem:
     :path: "../node_modules/expo-file-system/ios"
   EXFont:
     :path: "../node_modules/expo-font/ios"
+  EXImageLoader:
+    :path: "../node_modules/expo-image-loader/ios"
   EXNotifications:
     :path: "../node_modules/expo-notifications/ios"
   Expo:
@@ -804,18 +823,20 @@ SPEC CHECKSUMS:
   CoinbaseWalletSDKExpo: 89f8ad7f799227be7aff2b9353b7a77d37eb8283
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EXApplication: 042aa2e3f05258a16962ea1a9914bf288db9c9a1
+  EXBarCodeScanner: 296dd50f6c03928d1d71d37ea17473b304cfdb00
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
   EXFileSystem: f8b838a880254de42a5a7da20ed5ce12e2697c1b
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
+  EXImageLoader: 03063370bc06ea1825713d3f55fe0455f7c88d04
   EXNotifications: 09394cbd7165f9a4a00a53328aa09bf874bae717
-  Expo: 61a8e1aa94311557c137c0a4dfd4fe78281cfbb4
+  Expo: 9060b49fecf07bebf1dd967730d079aa5e750ebe
   ExpoClipboard: 695f274f8e028cd113837f917da40c76850877eb
   ExpoDevice: 1c1b0c9cad96c292c1de73948649cfd654b2b3c0
   ExpoDocumentPicker: d3b6b0ed2dbbc2f05158e0294dd3f4673f386e5f
   ExpoHaptics: 604aca02e942d1d43c139cae7cf397b26f85476f
   ExpoHead: ac95331e2a45cb94f6aee8ba6b8cb3d0a2cc6817
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
-  ExpoModulesCore: c480fd4e3c7c8e81f0a6ba3a7c56869f25fe016d
+  ExpoModulesCore: cf14fc49a3d5df3ed3cf2a38fc758d073bfd1c13
   ExpoSecureStore: 5372610a4bbcf5e50fafbe6f38f8d9c22edf8253
   ExpoWebBrowser: 2c788f9c07718a780fe6d8bf2f6195c47609faaa
   EXSplashScreen: c0e7f2d4a640f3b875808ed0b88575538daf6d82
