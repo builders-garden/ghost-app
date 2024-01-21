@@ -44,6 +44,9 @@ export default function LendingSupply({
   const { mutateAsync: ghoApprove, isLoading: isApprovingGHO } =
     useContractWrite(ghoContract, "approve");
   const { contract: daiContract } = useContract(DAI_ADDRESS);
+  const { data: daiBalanceData } = useContractRead(daiContract, "balanceOf", [
+    user?.address,
+  ]);
   const { mutateAsync: approve, isLoading: isApproving } = useContractWrite(
     daiContract,
     "approve"
@@ -88,16 +91,18 @@ export default function LendingSupply({
         });
       }
 
-      const { receipt: swapReceipt } = await swap({
-        args: [
-          supplyAmountInWei,
-          supplyAmountInWei,
-          [GHO_SEPOLIA_ADDRESS, DAI_ADDRESS],
-          user?.address,
-          0,
-        ],
-        overrides: { maxFeePerGas: 4 },
-      });
+      if (daiBalanceData.lt(supplyAmountInWei)) {
+        const { receipt: swapReceipt } = await swap({
+          args: [
+            supplyAmountInWei.sub(daiBalanceData),
+            supplyAmountInWei.sub(daiBalanceData),
+            [GHO_SEPOLIA_ADDRESS, DAI_ADDRESS],
+            user?.address,
+            0,
+          ],
+          overrides: { maxFeePerGas: 4 },
+        });
+      }
 
       const { receipt } = await supply({
         args: [DAI_ADDRESS, supplyAmountInWei, user?.address, 0],
@@ -124,22 +129,24 @@ export default function LendingSupply({
     }
   };
   return (
-    <View className="flex flex-col items-center">
+    <View className="flex flex-col">
       <Text className="text-white mt-4">
         This is the amount of GHO that you want to supply to the pool. It will
         be converted into DAI.
       </Text>
-      <AmountChooser
-        dollars={supplyAmount}
-        onSetDollars={setSupplyAmount}
-        showAmountAvailable
-        autoFocus
-        lagAutoFocus={false}
-      />
+      <View className="mx-auto">
+        <AmountChooser
+          dollars={supplyAmount}
+          onSetDollars={setSupplyAmount}
+          showAmountAvailable
+          autoFocus
+          lagAutoFocus={false}
+        />
+      </View>
       {balanceOfLoading ? (
         <ActivityIndicator animating={true} color={"#C9B3F9"} />
       ) : (
-        <Text className="text-[#53516C] font-semibold">
+        <Text className="text-[#53516C] font-semibold text-center">
           ${balance} available
         </Text>
       )}

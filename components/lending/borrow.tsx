@@ -82,28 +82,30 @@ export default function LendingBorrow({
     }
   };
   return (
-    <View className="flex flex-col items-center">
+    <View className="flex flex-col">
       <Text className="text-white mt-4">
         This is amount of GHO that you want to borrow.
       </Text>
-      <AmountChooser
-        dollars={borrowAmount}
-        onSetDollars={setBorrowAmount}
-        showAmountAvailable
-        autoFocus
-        lagAutoFocus={false}
-      />
+      <View className="mx-auto">
+        <AmountChooser
+          dollars={borrowAmount}
+          onSetDollars={setBorrowAmount}
+          showAmountAvailable
+          autoFocus
+          lagAutoFocus={false}
+        />
+      </View>
       {balanceOfLoading ? (
         <ActivityIndicator animating={true} color={"#C9B3F9"} />
       ) : (
         <>
-          <Text className="text-[#53516C] font-semibold">
-            ${formatUnits(userData[2], 8)} borrowable
+          <Text className="text-[#53516C] font-semibold text-center">
+            ${parseFloat(formatUnits(userData[2], 8)).toFixed(2)} borrowable
           </Text>
-
+          {/* 
           <Text className="text-[#53516C] font-semibold">
             ${formatUnits(userData[1], 8)} borrowed
-          </Text>
+          </Text> */}
         </>
       )}
       <View className="mt-8 w-full">

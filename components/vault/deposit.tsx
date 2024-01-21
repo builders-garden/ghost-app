@@ -85,23 +85,25 @@ export default function VaultDeposit({
     }
   };
   return (
-    <View className="flex flex-col items-center">
+    <View className="flex flex-col">
       <Text className="text-white mt-4">
         This is the amount of GHO that you will deposit in the GHO Vault. The
         actual amount of deposited tokens can be lower than the input one
         because of liquidity provisioning conditions.
       </Text>
-      <AmountChooser
-        dollars={depositAmount}
-        onSetDollars={setDepositAmount}
-        showAmountAvailable
-        autoFocus
-        lagAutoFocus={false}
-      />
+      <View className="mx-auto">
+        <AmountChooser
+          dollars={depositAmount}
+          onSetDollars={setDepositAmount}
+          showAmountAvailable
+          autoFocus
+          lagAutoFocus={false}
+        />
+      </View>
       {balanceOfLoading ? (
         <ActivityIndicator animating={true} color={"#C9B3F9"} />
       ) : (
-        <Text className="text-[#53516C] font-semibold">
+        <Text className="text-[#53516C] font-semibold text-center">
           ${balance} available
         </Text>
       )}

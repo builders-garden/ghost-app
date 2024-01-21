@@ -89,24 +89,24 @@ export default function VaultModal({
           </Text>
         </View>
         <View className="flex flex-row items-center justify-around space-x-4">
-          <View className="flex flex-col space-y-1 items-center">
-            <Text className="text-[#53516C] font-semibold">GHO Balance</Text>
+          <View className="flex flex-col space-y-1 items-center w-48">
+            <Text className="text-[#53516C] font-semibold">Balance</Text>
             <Text className="text-white text-2xl font-bold text-center">
               ${balance}
             </Text>
           </View>
-          <View className="flex flex-col space-y-1 items-center text-center">
+          <View className="flex flex-col space-y-1 items-center text-center w-48">
             <Text className="text-[#53516C] font-semibold text-center">
-              Total Vault Balance
+              Vault Balance
             </Text>
             <Text className="text-white text-2xl font-bold text-center">
               ${readableTotalShares.toFixed(2)}
             </Text>
           </View>
-          <View className="flex flex-col space-y-1 items-center">
+          <View className="flex flex-col space-y-1 items-center w-48">
             <Text className="text-[#53516C] font-semibold">APY</Text>
             <Text className="text-white text-2xl font-bold text-center">
-              3%
+              3.00%
             </Text>
           </View>
         </View>

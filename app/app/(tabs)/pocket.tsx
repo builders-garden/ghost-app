@@ -95,7 +95,7 @@ export default function Pocket() {
           <View className="flex flex-row items-center space-x-4 justify-between">
             <View className="flex flex-col mr-6 items-end">
               <Text className="text-lg text-emerald-500 font-semibold">
-                1.5%
+                1.50%
               </Text>
               <Text className="text-[#53516C]">APY</Text>
             </View>
@@ -122,7 +122,9 @@ export default function Pocket() {
           </View>
           <View className="flex flex-row items-center space-x-4 justify-between">
             <View className="flex flex-col mr-6 items-end">
-              <Text className="text-lg text-emerald-500 font-semibold">3%</Text>
+              <Text className="text-lg text-emerald-500 font-semibold">
+                3.00%
+              </Text>
               <Text className="text-[#53516C]">APY</Text>
             </View>
             <Icon name="chevron-right" size={16} color="#C9B3F9" />
