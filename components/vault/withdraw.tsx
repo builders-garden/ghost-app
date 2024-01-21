@@ -16,12 +16,14 @@ export default function VaultWithdraw({
   balanceData,
   balanceOfLoading,
   refetchBalance,
+  refetchVaultBalance,
   vaultContract,
   ghoContract,
 }: {
   balanceData: BigNumber;
   balanceOfLoading: boolean;
   refetchBalance: () => void;
+  refetchVaultBalance: () => void;
   vaultContract: SmartContract<ethers.BaseContract> | undefined;
   ghoContract: SmartContract<ethers.BaseContract> | undefined;
 }) {
@@ -59,6 +61,7 @@ export default function VaultWithdraw({
         text2: "Withdrawn GHO successfully.",
       });
       refetchBalance();
+      refetchVaultBalance();
     } catch (error) {
       console.error(error);
       Toast.show({

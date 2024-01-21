@@ -1,17 +1,13 @@
-import { Redirect, router } from "expo-router";
+import { Redirect, router, useNavigation } from "expo-router";
 import { View, Text, Image, Pressable } from "react-native";
 import { Appbar } from "react-native-paper";
 import { useUserStore } from "../../../store";
 import { useContract, useContractRead } from "@thirdweb-dev/react-native";
-import {
-  AAVE_BORROW_ADDRESS,
-  AUSDC_ADDRESS,
-  AUSDT_ADDRESS,
-  VAULT_ADDRESS,
-} from "../../../constants/sepolia";
+import { AAVE_BORROW_ADDRESS, VAULT_ADDRESS } from "../../../constants/sepolia";
 import { BigNumber } from "ethers";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { formatUnits } from "viem";
+import { useEffect } from "react";
 
 export default function Pocket() {
   const user = useUserStore((state) => state.user);
@@ -19,24 +15,31 @@ export default function Pocket() {
   const {
     data: userData = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)],
     isLoading,
-  } = useContractRead(
-    contract,
-    "getUserAccountData",
-    [user?.address]
-    // ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
-  );
-  const { contract: aUSDTContract } = useContract(AUSDT_ADDRESS);
-  const { contract: aUSDCContract } = useContract(AUSDC_ADDRESS);
+    refetch,
+  } = useContractRead(contract, "getUserAccountData", [user?.address]);
+  const navigation = useNavigation();
 
   const { contract: vaultContract } = useContract(VAULT_ADDRESS);
-  const { data: userVaultBalance = BigNumber.from(0) } = useContractRead(
-    vaultContract,
-    "totalAssetsOfUser",
-    [user?.address]
-  );
+  const {
+    data: userVaultBalance = BigNumber.from(0),
+    refetch: refetchVaultBalance,
+  } = useContractRead(vaultContract, "totalAssetsOfUser", [user?.address]);
 
   const vaultBalance = parseFloat(formatUnits(userVaultBalance.toString(), 18));
   const aaveLendingBalance = parseFloat(formatUnits(userData[0], 8));
+
+  useEffect(() => {
+    const refresh = () => {
+      refetch();
+      refetchVaultBalance();
+    };
+
+    navigation.addListener("focus", refresh);
+
+    return () => {
+      navigation.removeListener("focus", refresh);
+    };
+  }, []);
 
   if (!user) {
     return <Redirect href={"/"} />;

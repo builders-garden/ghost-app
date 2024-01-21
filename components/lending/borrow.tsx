@@ -15,15 +15,15 @@ import AppButton from "../app-button";
 import { GHO_ASSET_PRICE, GHO_SEPOLIA_ADDRESS } from "../../constants/sepolia";
 
 export default function LendingBorrow({
-  balanceData,
   balanceOfLoading,
   refetchBalance,
+  refetchPoolBalance,
   aavePoolContract,
   ghoContract,
 }: {
-  balanceData: BigNumber;
   balanceOfLoading: boolean;
   refetchBalance: () => void;
+  refetchPoolBalance: () => void;
   aavePoolContract: SmartContract<ethers.BaseContract> | undefined;
   ghoContract: SmartContract<ethers.BaseContract> | undefined;
 }) {
@@ -47,9 +47,6 @@ export default function LendingBorrow({
     // ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
   );
 
-  const balance = parseFloat(
-    formatUnits(balanceData.toString() as any, 18)
-  ).toFixed(2);
   const canBorrow =
     userData && userData[2]
       ? parseFloat(userData[2].div(GHO_ASSET_PRICE).toString()) > 0
@@ -74,6 +71,7 @@ export default function LendingBorrow({
         text2: "Borrowed GHO successfully.",
       });
       refetchBalance();
+      refetchPoolBalance();
     } catch (error) {
       console.error(error);
       Toast.show({

@@ -24,25 +24,26 @@ export default function LendingSupply({
   balanceData,
   balanceOfLoading,
   refetchBalance,
+  refetchPoolBalance,
   aavePoolContract,
   ghoContract,
 }: {
   balanceData: BigNumber;
   balanceOfLoading: boolean;
   refetchBalance: () => void;
+  refetchPoolBalance: () => void;
   aavePoolContract: SmartContract<ethers.BaseContract> | undefined;
   ghoContract: SmartContract<ethers.BaseContract> | undefined;
 }) {
   const user = useUserStore((state) => state.user);
   const [supplyAmount, setSupplyAmount] = useState(0);
-  const { contract: daiContract } = useContract(DAI_ADDRESS);
-  const { contract: supplyRouterContract } = useContract(SUPPLY_ROUTER_ADDRESS);
   const { mutateAsync: supply, isLoading: isSupplying } = useContractWrite(
     aavePoolContract,
     "deposit"
   );
   const { mutateAsync: ghoApprove, isLoading: isApprovingGHO } =
     useContractWrite(ghoContract, "approve");
+  const { contract: daiContract } = useContract(DAI_ADDRESS);
   const { mutateAsync: approve, isLoading: isApproving } = useContractWrite(
     daiContract,
     "approve"
@@ -55,6 +56,7 @@ export default function LendingSupply({
     user?.address,
     SUPPLY_ROUTER_ADDRESS,
   ]);
+  const { contract: supplyRouterContract } = useContract(SUPPLY_ROUTER_ADDRESS);
   const { mutateAsync: swap, isLoading: isSwapping } = useContractWrite(
     supplyRouterContract,
     "swapExactTokensForTokens"
@@ -109,6 +111,7 @@ export default function LendingSupply({
         text2: "Supplied GHO successfully.",
       });
       refetchBalance();
+      refetchPoolBalance();
     } catch (error) {
       console.error(error);
       Toast.show({

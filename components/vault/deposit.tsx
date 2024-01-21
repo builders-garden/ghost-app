@@ -11,19 +11,21 @@ import { useUserStore } from "../../store/use-user-store";
 import { AmountChooser } from "../amount-chooser";
 import { View, Text } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
-import { formatUnits } from "viem";
+import { formatUnits } from "ethers/lib/utils";
 import AppButton from "../app-button";
 
 export default function VaultDeposit({
   balanceData,
   balanceOfLoading,
   refetchBalance,
+  refetchVaultBalance,
   vaultContract,
   ghoContract,
 }: {
   balanceData: BigNumber;
   balanceOfLoading: boolean;
   refetchBalance: () => void;
+  refetchVaultBalance: () => void;
   vaultContract: SmartContract<ethers.BaseContract> | undefined;
   ghoContract: SmartContract<ethers.BaseContract> | undefined;
 }) {
@@ -72,6 +74,7 @@ export default function VaultDeposit({
         text2: "Deposited GHO successfully.",
       });
       refetchBalance();
+      refetchVaultBalance();
     } catch (error) {
       console.error(error);
       Toast.show({
@@ -84,8 +87,9 @@ export default function VaultDeposit({
   return (
     <View className="flex flex-col items-center">
       <Text className="text-white mt-4">
-        This is the % of GHO in the vault that you will withdraw. 100% will
-        withdraw all of your GHO.
+        This is the amount of GHO that you will deposit in the GHO Vault. The
+        actual amount of deposited tokens can be lower than the input one
+        because of liquidity provisioning conditions.
       </Text>
       <AmountChooser
         dollars={depositAmount}

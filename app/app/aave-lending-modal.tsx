@@ -45,6 +45,7 @@ export default function AAVELendingModal({
   const {
     data: userData = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)],
     isLoading,
+    refetch: refetchPoolBalance,
   } = useContractRead(
     aavePoolContract,
     "getUserAccountData",
@@ -108,9 +109,9 @@ export default function AAVELendingModal({
         <SegmentSlider {...{ tabs, tab, setTab }} />
         {tab === "BORROW" && (
           <LendingBorrow
-            balanceData={balanceData}
             balanceOfLoading={balanceOfLoading}
             refetchBalance={refetchBalance}
+            refetchPoolBalance={refetchPoolBalance}
             ghoContract={ghoContract}
             aavePoolContract={aavePoolContract}
           />
@@ -120,6 +121,7 @@ export default function AAVELendingModal({
             balanceData={balanceData}
             balanceOfLoading={balanceOfLoading}
             refetchBalance={refetchBalance}
+            refetchPoolBalance={refetchPoolBalance}
             ghoContract={ghoContract}
             aavePoolContract={aavePoolContract}
           />
@@ -129,6 +131,7 @@ export default function AAVELendingModal({
             balanceData={balanceData}
             balanceOfLoading={balanceOfLoading}
             refetchBalance={refetchBalance}
+            refetchPoolBalance={refetchPoolBalance}
             ghoContract={ghoContract}
             aavePoolContract={aavePoolContract}
           />

@@ -1,5 +1,6 @@
 import {
   SmartContract,
+  useContract,
   useContractRead,
   useContractWrite,
 } from "@thirdweb-dev/react-native";
@@ -11,19 +12,24 @@ import { View, ActivityIndicator, Text } from "react-native";
 import { Slider } from "react-native-awesome-slider";
 import AppButton from "../app-button";
 import Toast from "react-native-toast-message";
-import { formatUnits } from "viem";
-import { DAI_ADDRESS } from "../../constants/sepolia";
+import {
+  DAI_ADDRESS,
+  GHO_SEPOLIA_ADDRESS,
+  SUPPLY_ROUTER_ADDRESS,
+} from "../../constants/sepolia";
 
 export default function LendingWithdraw({
   balanceData,
   balanceOfLoading,
   refetchBalance,
+  refetchPoolBalance,
   aavePoolContract,
   ghoContract,
 }: {
   balanceData: BigNumber;
   balanceOfLoading: boolean;
   refetchBalance: () => void;
+  refetchPoolBalance: () => void;
   aavePoolContract: SmartContract<ethers.BaseContract> | undefined;
   ghoContract: SmartContract<ethers.BaseContract> | undefined;
 }) {
@@ -38,6 +44,22 @@ export default function LendingWithdraw({
     "withdraw"
   );
 
+  const { contract: daiContract } = useContract(DAI_ADDRESS);
+  const { mutateAsync: approve, isLoading: isApproving } = useContractWrite(
+    daiContract,
+    "approve"
+  );
+  const { data: approvalData } = useContractRead(daiContract, "allowance", [
+    user?.address,
+    SUPPLY_ROUTER_ADDRESS,
+  ]);
+
+  const { contract: supplyRouterContract } = useContract(SUPPLY_ROUTER_ADDRESS);
+  const { mutateAsync: swap, isLoading: isSwapping } = useContractWrite(
+    supplyRouterContract,
+    "swapExactTokensForTokens"
+  );
+
   const {
     data: userData = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)],
     isLoading,
@@ -48,7 +70,7 @@ export default function LendingWithdraw({
     // ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
   );
   const canWithdraw = withdrawPercentage && withdrawPercentage > 0;
-  const withdrawable = parseFloat(formatUnits(userData[0].sub(userData[1]), 8));
+  //   const withdrawable = parseFloat(formatUnits(userData[0].sub(userData[1]), 8));
 
   const executeWithdraw = async () => {
     try {
@@ -63,15 +85,32 @@ export default function LendingWithdraw({
         args: [DAI_ADDRESS, withdrawAmountInWei, user?.address],
       });
 
-      if (receipt) {
+      if (approvalData.eq(0)) {
+        const { receipt: approvalReceipt } = await approve({
+          args: [SUPPLY_ROUTER_ADDRESS, ethers.constants.MaxUint256],
+        });
+      }
+
+      const { receipt: swapReceipt } = await swap({
+        args: [
+          withdrawAmountInWei,
+          withdrawAmountInWei,
+          [DAI_ADDRESS, GHO_SEPOLIA_ADDRESS],
+          user?.address,
+        ],
+      });
+
+      if (swapReceipt) {
         setWithdrawPercentage(0);
       }
+
       Toast.show({
         type: "success",
         text1: "Success!",
         text2: "Withdrawn GHO successfully.",
       });
       refetchBalance();
+      refetchPoolBalance();
     } catch (error) {
       console.error(error);
       Toast.show({
@@ -106,7 +145,7 @@ export default function LendingWithdraw({
         />
       </View>
       <View className="mt-2">
-        {isWithdrawing ? (
+        {isWithdrawing || isSwapping || isApproving ? (
           <ActivityIndicator animating={true} color={"#C9B3F9"} />
         ) : (
           <AppButton

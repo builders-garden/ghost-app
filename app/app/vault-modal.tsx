@@ -2,17 +2,14 @@ import { Link, router } from "expo-router";
 import { View, Text } from "react-native";
 import { Appbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  useContract,
-  useContractRead,
-} from "@thirdweb-dev/react-native";
+import { useContract, useContractRead } from "@thirdweb-dev/react-native";
 import { useUserStore } from "../../store";
 import {
   GHO_SEPOLIA_ADDRESS,
   VAULT_ABI,
   VAULT_ADDRESS,
 } from "../../constants/sepolia";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { useRef, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { formatUnits } from "viem";
@@ -48,15 +45,13 @@ export default function VaultModal({
   const readableTotalShares = parseFloat(
     formatUnits(totalShares.toString(), 18)
   );
-  const { data: userBalance = BigNumber.from(0) } = useContractRead(
-    vaultContract,
-    "totalAssetsOfUser",
-    [user?.address]
-  );
+  const {
+    data: userBalance = BigNumber.from(0),
+    refetch: refetchVaultBalance,
+  } = useContractRead(vaultContract, "totalAssetsOfUser", [user?.address]);
   const readableUserBalance = parseFloat(
     formatUnits(userBalance.toString(), 18)
   );
-
 
   const isPresented = router.canGoBack();
   return (
@@ -122,6 +117,7 @@ export default function VaultModal({
             balanceData={balanceData}
             balanceOfLoading={balanceOfLoading}
             refetchBalance={refetchBalance}
+            refetchVaultBalance={refetchVaultBalance}
             ghoContract={ghoContract}
             vaultContract={vaultContract}
           />
@@ -131,6 +127,7 @@ export default function VaultModal({
             balanceData={balanceData}
             balanceOfLoading={balanceOfLoading}
             refetchBalance={refetchBalance}
+            refetchVaultBalance={refetchVaultBalance}
             ghoContract={ghoContract}
             vaultContract={vaultContract}
           />
