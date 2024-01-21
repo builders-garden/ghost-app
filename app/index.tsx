@@ -74,7 +74,7 @@ const Home = () => {
       {connectionStatus === "disconnected" && (
         <ConnectWallet
           modalTitle="GHOst Wallet"
-          buttonTitle="Login via thirdweb"
+          buttonTitle="Login"
           modalTitleIconUrl=""
           theme={theme}
         />

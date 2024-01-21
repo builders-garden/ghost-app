@@ -42,6 +42,7 @@ export default function Onboarding() {
   const [username, setUsername] = useState("");
   const [isEnabled, setIsEnabled] = useState(true);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [creationStatus, setCreationStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const address = useAddress();
   const setUser = useUserStore((state) => state.setUser);
@@ -71,6 +72,7 @@ export default function Onboarding() {
   }, [step, address, approvalData, approvalData2]);
 
   const createAccount = async (address: string) => {
+    setCreationStatus("Creating user...");
     let password = await SecureStore.getItemAsync(`password-${address}`);
     if (!password) {
       password = generatePassword();
@@ -93,7 +95,11 @@ export default function Onboarding() {
       }
     }
 
+    console.log({ approvalData, approvalData2 });
+
     if (approvalData.eq(0)) {
+      setCreationStatus("Setting USDC approval...");
+      console.log("@@@@@@ Approving USDC");
       const { receipt: usdcReceipt } = await approveUSDC({
         args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
       });
@@ -105,6 +111,8 @@ export default function Onboarding() {
     }
 
     if (approvalData2.eq(0)) {
+      setCreationStatus("Setting USDT approval...");
+      console.log("@@@@@@ Approving USDT");
       const { receipt: usdtReceipt } = await approveUSDT({
         args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
       });
@@ -114,6 +122,9 @@ export default function Onboarding() {
         text2: "Approved USDT spending.",
       });
     }
+
+    setCreationStatus("Approvals done.");
+    console.log("@@@@@@ Approvals done.");
 
     setTimeout(() => {
       setStep(step + 1);
@@ -161,9 +172,12 @@ export default function Onboarding() {
         />
       </Appbar.Header>
       {step === 0 && (
-        <View className="flex-1 flex-col items-center justify-center space-y-2">
-          <Text className="text-white font-semibold text-xl">
-            Creating your account..
+        <View className="flex-1 flex-col items-center justify-center space-y-2 mx-4">
+          <Text className="text-white font-semibold text-lg text-center">
+            Creating your account, this might{"\n"} take a while.
+          </Text>
+          <Text className="text-[#53516C] text-center font-medium">
+            {creationStatus}
           </Text>
           <ActivityIndicator animating={loading} color={"#C9B3F9"} />
         </View>

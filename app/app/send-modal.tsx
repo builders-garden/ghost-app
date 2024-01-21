@@ -29,9 +29,12 @@ import Avatar from "../../components/avatar";
 import { InfoBox } from "../../components/infobox";
 import Spacer from "../../components/spacer";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { TransactionReceipt } from "viem";
+
+const EXAMPLE_CROSS_CHAIN_ADDRESS =
+  "0x1358155a15930f89eBc787a34Eb4ccfd9720bC62";
 
 export default function SendModal() {
-  const [copied, setCopied] = useState(false);
   const isPresented = router.canGoBack();
   const sendUser = useSendStore((state) => state.user);
   const setSendUser = useSendStore((state) => state.setSendUser);
@@ -46,11 +49,14 @@ export default function SendModal() {
     "balanceOf",
     [user?.address]
   );
+  const isCrossChain = sendUser?.username === "paolorollo";
+  // const isCrossChain = sendUser?.chain !== user?.chain;
+
+  const sendUserChain = isCrossChain ? "Mumbai" : "Sepolia";
+  // const sendUserChain = sendUser?.chain;
+
   const balance = balanceData
-    ? (balanceData as BigNumber)
-        .div(BigNumber.from(10).pow(18))
-        .toNumber()
-        .toFixed(2)
+    ? parseFloat(formatUnits(balanceData, 18)).toFixed(2)
     : (0).toFixed(2);
   const { contract: aaveBorrowContract } = useContract(AAVE_BORROW_ADDRESS);
   const { data: userData, isLoading } = useContractRead(
@@ -86,24 +92,51 @@ export default function SendModal() {
           ],
         });
       }
-      const { receipt } = await transfer({
-        to: sendUser!.address,
-        amount,
-      });
-      const transaction = {
-        txHash: receipt.transactionHash,
-        blockNumber: receipt.blockNumber,
-        from: user?.address,
-        fromUsername: user?.username,
-        to: sendUser.address,
-        toUsername: sendUser?.username,
-        amount,
-        createdAt: new Date().toISOString(),
-      };
-      await setDoc(
-        doc(firebaseFirestore, "transactions", receipt.transactionHash),
-        transaction
-      );
+
+      if (isCrossChain) {
+        // APPROVE
+        // SEND
+        const { receipt } = await transfer({
+          to: sendUser!.address,
+          amount,
+        });
+        const transaction = {
+          txHash: receipt.transactionHash,
+          blockNumber: receipt.blockNumber,
+          from: user?.address,
+          fromUsername: user?.username,
+          to: sendUser.address,
+          toUsername: sendUser?.username,
+          amount,
+          createdAt: new Date().toISOString(),
+        };
+        await setDoc(
+          doc(firebaseFirestore, "transactions", receipt.transactionHash),
+          transaction
+        );
+      } else {
+        console.log("here");
+        const { receipt } = await transfer({
+          to: sendUser!.address,
+          amount,
+        });
+        console.log("transfer");
+        const transaction = {
+          txHash: receipt.transactionHash,
+          blockNumber: receipt.blockNumber,
+          from: user?.address,
+          fromUsername: user?.username,
+          to: sendUser.address,
+          toUsername: sendUser?.username,
+          amount,
+          createdAt: new Date().toISOString(),
+        };
+        await setDoc(
+          doc(firebaseFirestore, "transactions", receipt.transactionHash),
+          transaction
+        );
+      }
+
       Toast.show({
         type: "success",
         text1: "Success!",
@@ -156,6 +189,9 @@ export default function SendModal() {
         </Text>
         <Text className="text-[#53516C] text-ellipsis">
           {shortenAddress(sendUser?.address, false)}
+          {isCrossChain && ` • ${sendUserChain}`}
+          {/* {isCrossChain && ` • ${sendUser?.chain}`} */}
+          {!isCrossChain && ` • Sepolia`}
         </Text>
 
         <AmountChooser
@@ -172,7 +208,17 @@ export default function SendModal() {
             ${balance} available
           </Text>
         )}
-        {needToBorrow && (
+        {isCrossChain && (
+          <>
+            <Spacer h={16} />
+            <InfoBox
+              title="Cross-chain Transaction"
+              subtitle={`${sendUser.username} is on a different chain (${sendUserChain}), so the transaction will take a little longer.`}
+              variant="info"
+            ></InfoBox>
+          </>
+        )}
+        {!loading && ! transferLoading && needToBorrow && (
           <>
             <Spacer h={16} />
             {canBorrow && (

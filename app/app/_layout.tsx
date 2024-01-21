@@ -29,6 +29,10 @@ export default function AppLayout() {
         options={{ presentation: "modal", headerShown: false }}
       />
       <Stack.Screen
+        name="aave-lending-modal"
+        options={{ presentation: "modal", headerShown: false }}
+      />
+      <Stack.Screen
         name="profile-modal"
         options={{ presentation: "fullScreenModal", headerShown: false }}
       />

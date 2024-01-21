@@ -81,7 +81,10 @@ export default function Pocket() {
             </Text>
           </View>
         </View>
-        <View className="border-2 border-[#C9B3F9] w-full p-3 rounded-lg flex flex-row items-center justify-between">
+        <Pressable
+          className="border-2 border-[#C9B3F9] w-full p-3 rounded-lg flex flex-row items-center justify-between mt-4"
+          onPress={() => router.push("/app/aave-lending-modal")}
+        >
           <View className="flex flex-row space-x-2 items-center">
             <Image
               source={require("../../../images/ghost.png")}
@@ -103,9 +106,9 @@ export default function Pocket() {
               </Text>
               <Text className="text-[#53516C]">APY</Text>
             </View>
-            {/* <Icon source="chevron-right" size={16} color="#C9B3F9" /> */}
+            <Icon name="chevron-right" size={16} color="#C9B3F9" />
           </View>
-        </View>
+        </Pressable>
         <Pressable
           className="border-2 border-[#C9B3F9] w-full p-3 rounded-lg flex flex-row items-center justify-between mt-4"
           onPress={() => router.push("/app/vault-modal")}
