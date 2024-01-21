@@ -18,8 +18,9 @@ We are applying for the following tracks:
 - **AAVE Payments**: we developed a native wallet that leverages AA (ERC-4337) to simplify the experience of sending, receiving and borrowing GHO tokens;
 - **AAVE Vaults**: we developed an ERC-4626 GHO Vault that allows users to deposit GHO tokens and use them as liquidity provider into a GHO/USDC Uniswap pool. This vault is also auto-populated when users receive GHO tokens and all the GHOst users share the same vault contract. Also, any remainder of USDT or USDC tokens received by the user is automatically sent to AAVE Lending Contracts;
 - **AAVE Integration Prize**: for allowing users to manage GHO tokens seamlessly by using their email address or Google account.
+- **Chainlink CCIP**: for allowing users to make easy-to-use cross-chain p2p payments.
 
-Although we are not applying for the **Chainlink** track (since we didn't find any suitable use case for it in this app context), we still leverage Chainlink's **AutomationCompatible** contract to perform the swap automations.
+We also leverage Chainlink's **AutomationCompatible** contract to perform the swap automation and the automated savings/investments features.
 
 ## ⚒️ GHOst Features
 

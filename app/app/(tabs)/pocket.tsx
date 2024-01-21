@@ -13,6 +13,7 @@ import {
 } from "../../../constants/sepolia";
 import { BigNumber } from "ethers";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { formatUnits, parseUnits } from "viem";
 
 export default function Pocket() {
   const user = useUserStore((state) => state.user);
@@ -36,23 +37,16 @@ export default function Pocket() {
     [user?.address]
   );
   const { contract: vaultContract } = useContract(VAULT_ADDRESS);
-  const { data: userShares = BigNumber.from(0) } = useContractRead(
+  const { data: userVaultBalance = BigNumber.from(0) } = useContractRead(
     vaultContract,
     "totalAssetsOfUser",
     [user?.address]
   );
-  const { data: userVaultBalance = BigNumber.from(0) } = useContractRead(
-    vaultContract,
-    "convertUserSharesToAssets",
-    [user?.address, userShares]
-  );
-  const vaultBalance = userVaultBalance
-    .div(BigNumber.from(10).pow(18))
-    .toNumber();
-  const aaveLendingBalance = aUSDTBalance
-    .div(BigNumber.from(10).pow(6))
-    .add(aUSDCBalance.div(BigNumber.from(10).pow(6)))
-    .toNumber();
+
+  const vaultBalance = parseFloat(formatUnits(userVaultBalance.toString(), 18));
+  const aaveLendingBalance =
+    parseFloat(formatUnits(aUSDTBalance, 6)) +
+    parseFloat(formatUnits(aUSDCBalance, 6));
 
   if (!user) {
     return <Redirect href={"/"} />;
