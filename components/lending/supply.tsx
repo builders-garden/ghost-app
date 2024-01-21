@@ -96,10 +96,12 @@ export default function LendingSupply({
           user?.address,
           0,
         ],
+        overrides: { maxFeePerGas: 4 },
       });
 
       const { receipt } = await supply({
         args: [DAI_ADDRESS, supplyAmountInWei, user?.address, 0],
+        overrides: { maxFeePerGas: 4 },
       });
 
       if (receipt) {

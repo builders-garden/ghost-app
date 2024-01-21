@@ -17,6 +17,7 @@ import {
   GHO_SEPOLIA_ADDRESS,
   SUPPLY_ROUTER_ADDRESS,
 } from "../../constants/sepolia";
+import { formatUnits } from "ethers/lib/utils";
 
 export default function LendingWithdraw({
   balanceData,
@@ -61,7 +62,12 @@ export default function LendingWithdraw({
   );
 
   const {
-    data: userData = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)],
+    data: userData = [
+      BigNumber.from(0),
+      BigNumber.from(0),
+      BigNumber.from(0),
+      BigNumber.from(0),
+    ],
     isLoading,
   } = useContractRead(
     aavePoolContract,
@@ -75,11 +81,26 @@ export default function LendingWithdraw({
   const executeWithdraw = async () => {
     try {
       const percentage = BigNumber.from(Math.floor(withdrawPercentage));
+      //   const withdrawAmountInWei = userData[0]
+      //     .sub(userData[1])
+      //     .mul(percentage)
+      //     .div(100)
+      //     .mul(BigNumber.from(10).pow(10));
+      console.log(userData[3].toString());
+      console.log(
+        userData.map((x: BigNumber, i: number) => {
+          console.log(i, formatUnits(x, 8));
+        })
+      );
       const withdrawAmountInWei = userData[0]
         .sub(userData[1])
         .mul(percentage)
         .div(100)
+        .mul(90)
+        .div(100)
         .mul(BigNumber.from(10).pow(10));
+
+      console.log(formatUnits(withdrawAmountInWei, 18));
 
       const { receipt } = await withdraw({
         args: [DAI_ADDRESS, withdrawAmountInWei, user?.address],
@@ -97,6 +118,7 @@ export default function LendingWithdraw({
           withdrawAmountInWei,
           [DAI_ADDRESS, GHO_SEPOLIA_ADDRESS],
           user?.address,
+          0,
         ],
       });
 
