@@ -52,7 +52,7 @@ export default function Settings() {
                 <Pressable
                   className="flex flex-row items-center space-x-2"
                   onPress={() => {
-                    Clipboard.setStringAsync(user.username);
+                    Clipboard.setStringAsync(user?.address);
                     setCopied(true);
                     setTimeout(() => {
                       setCopied(false);

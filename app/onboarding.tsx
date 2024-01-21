@@ -42,6 +42,7 @@ export default function Onboarding() {
   const [username, setUsername] = useState("");
   const [isEnabled, setIsEnabled] = useState(true);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const [creationStatus, setCreationStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const address = useAddress();
   const setUser = useUserStore((state) => state.setUser);
@@ -71,6 +72,7 @@ export default function Onboarding() {
   }, [step, address, approvalData, approvalData2]);
 
   const createAccount = async (address: string) => {
+    setCreationStatus("Creating user...");
     let password = await SecureStore.getItemAsync(`password-${address}`);
     if (!password) {
       password = generatePassword();
@@ -93,8 +95,11 @@ export default function Onboarding() {
       }
     }
 
+    console.log({ approvalData, approvalData2 });
+
     if (approvalData.eq(0)) {
-      console.log("approving usdc");
+      setCreationStatus("Setting USDC approval...");
+      console.log("@@@@@@ Approving USDC");
       const { receipt: usdcReceipt } = await approveUSDC({
         args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
       });
@@ -107,7 +112,8 @@ export default function Onboarding() {
     }
 
     if (approvalData2.eq(0)) {
-      console.log("approving usdt");
+      setCreationStatus("Setting USDT approval...");
+      console.log("@@@@@@ Approving USDT");
       const { receipt: usdtReceipt } = await approveUSDT({
         args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
       });
@@ -118,6 +124,9 @@ export default function Onboarding() {
         text2: "Approved USDT spending.",
       });
     }
+
+    setCreationStatus("Approvals done.");
+    console.log("@@@@@@ Approvals done.");
 
     setTimeout(() => {
       setStep(step + 1);
@@ -165,52 +174,59 @@ export default function Onboarding() {
         />
       </Appbar.Header>
       {step === 0 && (
-        <View className="flex-1 flex-col items-center justify-center space-y-2">
-          <Text className="text-white font-semibold text-xl">
-            Creating your account..
+        <View className="flex-1 flex-col items-center justify-center space-y-2 mx-4">
+          <Text className="text-white font-semibold text-lg text-center">
+            Creating your account, this might{"\n"} take a while.
+          </Text>
+          <Text className="text-[#53516C] text-center font-medium">
+            {creationStatus}
           </Text>
           <ActivityIndicator animating={loading} color={"#C9B3F9"} />
         </View>
       )}
       {step === 1 && (
-        <View className="flex flex-col items-start px-4 justify-center space-y-2">
+        <View className="flex flex-col flex-grow px-4 justify-between mb-12">
           {/* <Text className="text-white font-semibold text-xl">
             Choose your preferences
           </Text> */}
-          <View className="w-full h-full">
-            <Text className="text-[#C9B3F9] font-semibold my-2">Username</Text>
-            <Text className="text-white mb-2">
-              Other users will be able to find you via this handle.
-            </Text>
-            <TextInput
-              value={username}
-              onChangeText={setUsername}
-              autoCapitalize="none"
-              autoComplete="off"
-              autoCorrect={false}
-              className="mb-2 text-white border-2 border-[#C9B3F9] px-2 py-3 rounded-md placeholder-white"
-            />
-            <View className="flex flex-row justify-between mt-2 mb-4">
-              <Text className="max-w-[300px] text-white">
-                Set aside the remainder of each received transaction rounded to
-                the nearest dollar (if you receive $1.30 set aside $0.30). This
-                option is enabled by default.
+          <View className="w-full">
+            <View>
+              <Text className="text-[#C9B3F9] font-semibold my-2">
+                Username
               </Text>
-              <Switch
-                trackColor={{ false: "black", true: "#C9B3F9" }}
-                thumbColor={"#201F2D"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
-                disabled
+              <Text className="text-white mb-2">
+                Other users will be able to find you via this name.
+              </Text>
+              <TextInput
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+                autoComplete="off"
+                autoCorrect={false}
+                className="mb-2 text-white border-2 border-[#C9B3F9] px-2 py-3 rounded-md placeholder-white"
               />
+              <View className="flex flex-row justify-between mt-8 mb-4">
+                <Text className="max-w-[300px] text-white">
+                  Set aside the remainder of each received transaction rounded
+                  to the nearest dollar (if you receive $1.30 set aside $0.30).
+                  This option is enabled by default.
+                </Text>
+                <Switch
+                  trackColor={{ false: "black", true: "#C9B3F9" }}
+                  thumbColor={"#201F2D"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={toggleSwitch}
+                  value={isEnabled}
+                  disabled
+                />
+              </View>
             </View>
-            <AppButton
-              text="Complete onboarding"
-              variant={username.length > 3 ? "primary" : "disabled"}
-              onPress={() => finishOnboarding()}
-            />
           </View>
+          <AppButton
+            text="Complete onboarding"
+            variant={username.length > 3 ? "primary" : "disabled"}
+            onPress={() => finishOnboarding()}
+          />
         </View>
       )}
       {step === 2 && (

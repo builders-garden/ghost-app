@@ -15,7 +15,7 @@ export default function AppButton({
         onPress={onPress}
         className="bg-transparent border-2 border-[#C9B3F9] rounded-md flex items-center justify-center py-3"
       >
-        <Text className="text-lg text-[#C9B3F9] font-semibold">{text}</Text>
+        <Text className="text-lg text-[#C9B3F9] font-semibold uppercase">{text}</Text>
       </TouchableOpacity>
     );
   }
@@ -23,7 +23,7 @@ export default function AppButton({
   if (variant === "disabled") {
     return (
         <View className="bg-[#C9B3F9] border-2 opacity-50 border-[#C9B3F9] rounded-md flex items-center justify-center py-3">
-          <Text className="text-lg text-black font-semibold">{text}</Text>
+          <Text className="text-lg text-black font-semibold uppercase">{text}</Text>
         </View>
     );
   }
@@ -33,7 +33,7 @@ export default function AppButton({
       onPress={onPress}
       className="bg-[#C9B3F9] border-2 border-[#C9B3F9] rounded-md flex items-center justify-center py-3"
     >
-      <Text className="text-lg text-black font-semibold">{text}</Text>
+      <Text className="text-lg text-black font-semibold uppercase">{text}</Text>
     </TouchableOpacity>
   );
 }

@@ -2,10 +2,7 @@ import { Link, router } from "expo-router";
 import { View, Text } from "react-native";
 import { Appbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  useContract,
-  useContractRead,
-} from "@thirdweb-dev/react-native";
+import { useContract, useContractRead } from "@thirdweb-dev/react-native";
 import { useUserStore } from "../../store";
 import {
   GHO_SEPOLIA_ADDRESS,
@@ -21,12 +18,12 @@ import VaultDeposit from "../../components/vault/deposit";
 import VaultWithdraw from "../../components/vault/withdraw";
 import Spacer from "../../components/spacer";
 
-type VaultScreenOptions = "DEPOSIT" | "WITHDRAW";
+type AAVELendingScreenOptions = "DEPOSIT" | "WITHDRAW" | "BORROW";
 
-export default function VaultModal({
+export default function AAVELendingModal({
   option,
 }: {
-  option?: VaultScreenOptions;
+  option?: AAVELendingScreenOptions;
 }) {
   const user = useUserStore((state) => state.user);
   const { contract: ghoContract } = useContract(GHO_SEPOLIA_ADDRESS);
@@ -38,8 +35,12 @@ export default function VaultModal({
   const balance = (balanceData / 10 ** 18).toFixed(2);
   const { contract: vaultContract } = useContract(VAULT_ADDRESS, VAULT_ABI);
 
-  const [tab, setTab] = useState<VaultScreenOptions>(option || "DEPOSIT");
-  const tabs = useRef(["DEPOSIT", "WITHDRAW"] as VaultScreenOptions[]).current;
+  const [tab, setTab] = useState<AAVELendingScreenOptions>(option || "BORROW");
+  const tabs = useRef([
+    "BORROW",
+    "DEPOSIT",
+    "WITHDRAW",
+  ] as AAVELendingScreenOptions[]).current;
 
   const { data: totalShares = BigNumber.from(0) } = useContractRead(
     vaultContract,
@@ -57,7 +58,6 @@ export default function VaultModal({
     formatUnits(userBalance.toString(), 18)
   );
 
-
   const isPresented = router.canGoBack();
   return (
     <SafeAreaView
@@ -71,7 +71,7 @@ export default function VaultModal({
         className="bg-[#201F2D] text-white"
       >
         <Appbar.Content
-          title="GHO Vault"
+          title="AAVE Lending"
           color="#fff"
           titleStyle={{ fontWeight: "bold" }}
         />
@@ -87,7 +87,7 @@ export default function VaultModal({
       <View className="flex flex-col px-4 mt-2 bg-[#201F2D]">
         <View className="px-14 pb-8">
           <Text className="text-white font-semibold text-center mb-4">
-            Your Vault balance
+            Your AAVE Pool balance
           </Text>
           <Text className="text-white font-bold text-center text-5xl">
             ${readableUserBalance.toFixed(2)}
@@ -100,14 +100,6 @@ export default function VaultModal({
               ${balance}
             </Text>
           </View>
-          <View className="flex flex-col space-y-1 items-center text-center">
-            <Text className="text-[#53516C] font-semibold text-center">
-              Total Vault Balance
-            </Text>
-            <Text className="text-white text-2xl font-bold text-center">
-              ${readableTotalShares.toFixed(2)}
-            </Text>
-          </View>
           <View className="flex flex-col space-y-1 items-center">
             <Text className="text-[#53516C] font-semibold">APY</Text>
             <Text className="text-white text-2xl font-bold text-center">
@@ -117,6 +109,15 @@ export default function VaultModal({
         </View>
         <Spacer h={24} />
         <SegmentSlider {...{ tabs, tab, setTab }} />
+        {tab === "BORROW" && (
+          <VaultDeposit
+            balanceData={balanceData}
+            balanceOfLoading={balanceOfLoading}
+            refetchBalance={refetchBalance}
+            ghoContract={ghoContract}
+            vaultContract={vaultContract}
+          />
+        )}
         {tab === "DEPOSIT" && (
           <VaultDeposit
             balanceData={balanceData}
