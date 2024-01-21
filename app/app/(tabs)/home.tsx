@@ -6,14 +6,13 @@ import {
 } from "@thirdweb-dev/react-native";
 import { Link, Redirect } from "expo-router";
 import { SafeAreaView, View, Text, ImageBackground } from "react-native";
-import { ActivityIndicator, Divider, IconButton } from "react-native-paper";
+import { ActivityIndicator, IconButton } from "react-native-paper";
 import Avatar from "../../../components/avatar";
 import CircularButton from "../../../components/circular-button";
-import LogoutModal from "../../../components/modals/logout-modal";
 import { router } from "expo-router";
 import { useUserStore } from "../../../store";
 import { BigNumber } from "ethers";
-import { GHO_SEPOLIA_ADDRESS, sepolia } from "../../../constants/sepolia";
+import { GHO_SEPOLIA_ADDRESS } from "../../../constants/sepolia";
 import { useTransactionsStore } from "../../../store/use-transactions-store";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { firebaseFirestore } from "../../../firebaseConfig";

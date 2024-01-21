@@ -9852,7 +9852,7 @@ expo-web-browser@~12.3.2:
     compare-urls "^2.0.0"
     url "^0.11.0"
 
-expo@^49.0.21:
+expo@^49.0.0:
   version "49.0.22"
   resolved "https://registry.yarnpkg.com/expo/-/expo-49.0.22.tgz#e5f1a37d10c2196790971e9e9cfdfdd14de01635"
   integrity sha512-1hhcphaKN74gDqEmGzU4sqxnusLi/i8SsWZ04rRn7b6zdyEchyudVLN3SOzeIUgfGmn7AcXm78JAQ7+e0WqSyw==

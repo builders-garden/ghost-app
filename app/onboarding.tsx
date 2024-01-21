@@ -94,6 +94,7 @@ export default function Onboarding() {
     }
 
     if (approvalData.eq(0)) {
+      console.log("approving usdc");
       const { receipt: usdcReceipt } = await approveUSDC({
         args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
       });
@@ -102,12 +103,15 @@ export default function Onboarding() {
         text1: "Success!",
         text2: "Approved USDC spending.",
       });
+      console.log("usdc approved");
     }
 
     if (approvalData2.eq(0)) {
+      console.log("approving usdt");
       const { receipt: usdtReceipt } = await approveUSDT({
         args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
       });
+      console.log("usdt approved");
       Toast.show({
         type: "success",
         text1: "Success!",
