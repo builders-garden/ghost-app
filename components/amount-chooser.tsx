@@ -3,7 +3,6 @@ import * as Haptics from "expo-haptics";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   NativeSyntheticEvent,
-  StyleSheet,
   Text,
   TextInput,
   TextInputEndEditingEventData,
@@ -91,6 +90,7 @@ function AmountInput({
     // Max two decimals: if necessary, modify entry
     const parts = text.split(/[.,]/);
     if (parts.length >= 2) {
+      console.log("onChangeParse");
       const roundedStr = `${parts[0]}${amountSeparator}${parts[1].slice(0, 2)}`;
       const roundedVal = parseLocalFloat(`${parts[0]}.${parts[1].slice(0, 2)}`);
       setStrVal(roundedStr);
@@ -105,6 +105,7 @@ function AmountInput({
 
   // Once we're done, round value to 2 decimal places
   const onBlur = (e: NativeSyntheticEvent<TextInputEndEditingEventData>) => {
+    console.log("onBlur");
     const value = e.nativeEvent.text;
 
     let newVal = parseLocalFloat(value);
@@ -123,7 +124,9 @@ function AmountInput({
 
   // Controlled component, but with state to allow typing "0", "0.", etc.
   useEffect(() => {
+    console.log(ref.current?.isFocused());
     if (ref.current?.isFocused()) return;
+    console.log("useEffect");
     setStrVal(dollars <= 0 ? "" : fmt(dollars));
   }, [dollars]);
 
@@ -133,6 +136,8 @@ function AmountInput({
   }, [ref, onFocus]);
 
   const isFocused = useIsFocused();
+  if (lagAutoFocus && isFocused) focus();
+  if (!isFocused) ref.current?.blur();
   /*const nav = useNav();
 
   useEffect(() => {
@@ -162,6 +167,7 @@ function AmountInput({
           selectTextOnFocus
           autoFocus={lagAutoFocus ? false : autoFocus ?? true}
           value={strVal}
+          ref={innerRef || otherRef}
           onChangeText={change}
           onEndEditing={onBlur} /* called on blur, works on Android */
           onTouchEnd={focus}
