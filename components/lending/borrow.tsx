@@ -5,7 +5,6 @@ import {
 } from "@thirdweb-dev/react-native";
 import { BigNumber, ethers } from "ethers";
 import { useState } from "react";
-import { VAULT_ADDRESS } from "../../constants/sepolia";
 import Toast from "react-native-toast-message";
 import { useUserStore } from "../../store/use-user-store";
 import { AmountChooser } from "../amount-chooser";
@@ -13,63 +12,66 @@ import { View, Text } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { formatUnits } from "viem";
 import AppButton from "../app-button";
+import { GHO_ASSET_PRICE, GHO_SEPOLIA_ADDRESS } from "../../constants/sepolia";
 
-export default function VaultDeposit({
+export default function LendingBorrow({
   balanceData,
   balanceOfLoading,
   refetchBalance,
-  vaultContract,
+  aavePoolContract,
   ghoContract,
 }: {
   balanceData: BigNumber;
   balanceOfLoading: boolean;
   refetchBalance: () => void;
-  vaultContract: SmartContract<ethers.BaseContract> | undefined;
+  aavePoolContract: SmartContract<ethers.BaseContract> | undefined;
   ghoContract: SmartContract<ethers.BaseContract> | undefined;
 }) {
   const user = useUserStore((state) => state.user);
-  const [depositAmount, setDepositAmount] = useState(0);
-  const { mutateAsync: deposit, isLoading: isDepositing } = useContractWrite(
-    vaultContract,
-    "deposit"
+  const [borrowAmount, setBorrowAmount] = useState(0);
+  const { mutateAsync: borrow, isLoading: isBorrowing } = useContractWrite(
+    aavePoolContract,
+    "borrow"
   );
   const { mutateAsync: approve, isLoading: isApproving } = useContractWrite(
     ghoContract,
     "approve"
   );
-  const { data: approvalData } = useContractRead(ghoContract, "allowance", [
-    user?.address,
-    VAULT_ADDRESS,
-  ]);
+  const {
+    data: userData = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)],
+    isLoading,
+  } = useContractRead(
+    aavePoolContract,
+    "getUserAccountData",
+    [user?.address]
+    // ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
+  );
+
   const balance = parseFloat(
     formatUnits(balanceData.toString() as any, 18)
   ).toFixed(2);
-  const canDeposit =
-    depositAmount && depositAmount > 0 && parseFloat(balance) >= depositAmount;
-  const executeDeposit = async () => {
+  const canBorrow =
+    userData && userData[2]
+      ? parseFloat(userData[2].div(GHO_ASSET_PRICE).toString()) > 0
+      : false;
+
+  const executeBorrow = async () => {
     try {
-      const depositAmountInWei = BigNumber.from(depositAmount).mul(
+      const borrowAmountInWei = BigNumber.from(borrowAmount).mul(
         BigNumber.from(10).pow(18)
       );
 
-      if (approvalData.eq(0)) {
-        console.log("approving spending");
-        const { receipt } = await approve({
-          args: [VAULT_ADDRESS, ethers.constants.MaxUint256],
-        });
-      }
-
-      const { receipt } = await deposit({
-        args: [depositAmountInWei, user?.address],
+      const { receipt } = await borrow({
+        args: [GHO_SEPOLIA_ADDRESS, borrowAmountInWei, 2, 0, user?.address],
       });
 
       if (receipt) {
-        setDepositAmount(0);
+        setBorrowAmount(0);
       }
       Toast.show({
         type: "success",
         text1: "Success!",
-        text2: "Deposited GHO successfully.",
+        text2: "Borrowed GHO successfully.",
       });
       refetchBalance();
     } catch (error) {
@@ -77,19 +79,18 @@ export default function VaultDeposit({
       Toast.show({
         type: "error",
         text1: "Error!",
-        text2: "Error depositing GHO. Try again.",
+        text2: "Error borrowing GHO. Try again.",
       });
     }
   };
   return (
     <View className="flex flex-col items-center">
       <Text className="text-white mt-4">
-        This is the % of GHO in the vault that you will withdraw. 100% will
-        withdraw all of your GHO.
+        This is amount of GHO that you want to borrow.
       </Text>
       <AmountChooser
-        dollars={depositAmount}
-        onSetDollars={setDepositAmount}
+        dollars={borrowAmount}
+        onSetDollars={setBorrowAmount}
         showAmountAvailable
         autoFocus
         lagAutoFocus={false}
@@ -97,18 +98,24 @@ export default function VaultDeposit({
       {balanceOfLoading ? (
         <ActivityIndicator animating={true} color={"#C9B3F9"} />
       ) : (
-        <Text className="text-[#53516C] font-semibold">
-          ${balance} available
-        </Text>
+        <>
+          <Text className="text-[#53516C] font-semibold">
+            ${formatUnits(userData[2], 8)} borrowable
+          </Text>
+
+          <Text className="text-[#53516C] font-semibold">
+            ${formatUnits(userData[1], 8)} borrowed
+          </Text>
+        </>
       )}
       <View className="mt-8 w-full">
-        {isDepositing || isApproving ? (
+        {isBorrowing || isApproving ? (
           <ActivityIndicator animating={true} color={"#C9B3F9"} />
         ) : (
           <AppButton
-            text="Deposit"
-            onPress={() => executeDeposit()}
-            variant={canDeposit ? "primary" : "disabled"}
+            text="Borrow"
+            onPress={() => executeBorrow()}
+            variant={canBorrow ? "primary" : "disabled"}
           />
         )}
       </View>

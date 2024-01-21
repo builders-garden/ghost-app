@@ -95,11 +95,8 @@ export default function Onboarding() {
       }
     }
 
-    console.log({ approvalData, approvalData2 });
-
     if (approvalData.eq(0)) {
       setCreationStatus("Setting USDC approval...");
-      console.log("@@@@@@ Approving USDC");
       const { receipt: usdcReceipt } = await approveUSDC({
         args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
       });
@@ -108,16 +105,13 @@ export default function Onboarding() {
         text1: "Success!",
         text2: "Approved USDC spending.",
       });
-      console.log("usdc approved");
     }
 
     if (approvalData2.eq(0)) {
       setCreationStatus("Setting USDT approval...");
-      console.log("@@@@@@ Approving USDT");
       const { receipt: usdtReceipt } = await approveUSDT({
         args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
       });
-      console.log("usdt approved");
       Toast.show({
         type: "success",
         text1: "Success!",
@@ -126,7 +120,6 @@ export default function Onboarding() {
     }
 
     setCreationStatus("Approvals done.");
-    console.log("@@@@@@ Approvals done.");
 
     setTimeout(() => {
       setStep(step + 1);

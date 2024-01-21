@@ -5,7 +5,6 @@ import { Text } from "react-native";
 import { useSendStore, useUserStore } from "../../store";
 import { useState } from "react";
 import {
-  Box,
   shortenAddress,
   useContract,
   useContractRead,
@@ -17,7 +16,6 @@ import {
   GHO_ASSET_PRICE,
   GHO_SEPOLIA_ADDRESS,
 } from "../../constants/sepolia";
-import { BigNumber } from "ethers";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { doc, setDoc } from "firebase/firestore";
 import { firebaseFirestore } from "../../firebaseConfig";
@@ -29,7 +27,6 @@ import Avatar from "../../components/avatar";
 import { InfoBox } from "../../components/infobox";
 import Spacer from "../../components/spacer";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { TransactionReceipt } from "viem";
 
 const EXAMPLE_CROSS_CHAIN_ADDRESS =
   "0x1358155a15930f89eBc787a34Eb4ccfd9720bC62";
@@ -115,12 +112,11 @@ export default function SendModal() {
           transaction
         );
       } else {
-        console.log("here");
         const { receipt } = await transfer({
           to: sendUser!.address,
           amount,
         });
-        console.log("transfer");
+
         const transaction = {
           txHash: receipt.transactionHash,
           blockNumber: receipt.blockNumber,
@@ -218,7 +214,7 @@ export default function SendModal() {
             ></InfoBox>
           </>
         )}
-        {!loading && ! transferLoading && needToBorrow && (
+        {!loading && !transferLoading && needToBorrow && (
           <>
             <Spacer h={16} />
             {canBorrow && (

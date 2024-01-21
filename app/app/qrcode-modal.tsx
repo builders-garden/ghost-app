@@ -1,4 +1,4 @@
-import { Linking, Platform, Share, View, Text, Pressable } from "react-native";
+import { Linking, Share, View, Text, Pressable } from "react-native";
 import { Link, router } from "expo-router";
 import { Appbar } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -78,7 +78,6 @@ function QRScan() {
   const handleBarCodeScanned: BarCodeScannedCallback = async ({ data }) => {
     if (handled) return;
 
-    console.log(data);
     Linking.openURL("https://google.com");
   };
 

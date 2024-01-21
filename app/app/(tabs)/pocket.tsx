@@ -2,23 +2,24 @@ import { Redirect, router } from "expo-router";
 import { View, Text, Image, Pressable } from "react-native";
 import { Appbar } from "react-native-paper";
 import { useUserStore } from "../../../store";
-import AppButton from "../../../components/app-button";
 import { useContract, useContractRead } from "@thirdweb-dev/react-native";
 import {
   AAVE_BORROW_ADDRESS,
   AUSDC_ADDRESS,
   AUSDT_ADDRESS,
-  GHO_ASSET_PRICE,
   VAULT_ADDRESS,
 } from "../../../constants/sepolia";
 import { BigNumber } from "ethers";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { formatUnits, parseUnits } from "viem";
+import { formatUnits } from "viem";
 
 export default function Pocket() {
   const user = useUserStore((state) => state.user);
   const { contract } = useContract(AAVE_BORROW_ADDRESS);
-  const { data: userData, isLoading } = useContractRead(
+  const {
+    data: userData = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)],
+    isLoading,
+  } = useContractRead(
     contract,
     "getUserAccountData",
     [user?.address]
@@ -26,16 +27,7 @@ export default function Pocket() {
   );
   const { contract: aUSDTContract } = useContract(AUSDT_ADDRESS);
   const { contract: aUSDCContract } = useContract(AUSDC_ADDRESS);
-  const { data: aUSDTBalance = BigNumber.from(0) } = useContractRead(
-    aUSDTContract,
-    "balanceOf",
-    [user?.address]
-  );
-  const { data: aUSDCBalance = BigNumber.from(0) } = useContractRead(
-    aUSDCContract,
-    "balanceOf",
-    [user?.address]
-  );
+
   const { contract: vaultContract } = useContract(VAULT_ADDRESS);
   const { data: userVaultBalance = BigNumber.from(0) } = useContractRead(
     vaultContract,
@@ -44,9 +36,7 @@ export default function Pocket() {
   );
 
   const vaultBalance = parseFloat(formatUnits(userVaultBalance.toString(), 18));
-  const aaveLendingBalance =
-    parseFloat(formatUnits(aUSDTBalance, 6)) +
-    parseFloat(formatUnits(aUSDCBalance, 6));
+  const aaveLendingBalance = parseFloat(formatUnits(userData[0], 8));
 
   if (!user) {
     return <Redirect href={"/"} />;
@@ -70,7 +60,7 @@ export default function Pocket() {
           onPress={() => router.push("/app/pocket-info-modal")}
         />
       </Appbar.Header>
-      <View className="flex-1 flex-col items-center justify-center w-full px-4 bg-[#201F2D]">
+      <View className="flex-1 flex-col items-center w-full px-4 bg-[#201F2D]">
         <View className="px-14">
           <View className="flex flex-col space-y-4 pb-8 pt-4">
             <Text className="text-white font-semibold text-center">
@@ -135,7 +125,7 @@ export default function Pocket() {
             <Icon name="chevron-right" size={16} color="#C9B3F9" />
           </View>
         </Pressable>
-        <View className="my-8 flex items-center w-full">
+        {/* <View className="my-8 flex items-center w-full">
           <View className="px-14">
             <View className="flex flex-col space-y-4 pb-8 pt-4">
               <Text className="text-white font-semibold text-center">
@@ -157,7 +147,7 @@ export default function Pocket() {
               onPress={() => router.push("/app/borrow-modal")}
             />
           </View>
-        </View>
+        </View> */}
       </View>
     </>
   );

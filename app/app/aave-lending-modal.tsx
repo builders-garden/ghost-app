@@ -5,20 +5,20 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useContract, useContractRead } from "@thirdweb-dev/react-native";
 import { useUserStore } from "../../store";
 import {
+  AAVE_POOL_ADDRESS,
   GHO_SEPOLIA_ADDRESS,
-  VAULT_ABI,
-  VAULT_ADDRESS,
 } from "../../constants/sepolia";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { useRef, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { formatUnits } from "viem";
 import { SegmentSlider } from "../../components/segment-slider";
-import VaultDeposit from "../../components/vault/deposit";
-import VaultWithdraw from "../../components/vault/withdraw";
 import Spacer from "../../components/spacer";
+import LendingBorrow from "../../components/lending/borrow";
+import LendingWithdraw from "../../components/lending/withdraw";
+import LendingSupply from "../../components/lending/supply";
 
-type AAVELendingScreenOptions = "DEPOSIT" | "WITHDRAW" | "BORROW";
+type AAVELendingScreenOptions = "SUPPLY" | "WITHDRAW" | "BORROW";
 
 export default function AAVELendingModal({
   option,
@@ -33,29 +33,26 @@ export default function AAVELendingModal({
     refetch: refetchBalance,
   } = useContractRead(ghoContract, "balanceOf", [user?.address]);
   const balance = (balanceData / 10 ** 18).toFixed(2);
-  const { contract: vaultContract } = useContract(VAULT_ADDRESS, VAULT_ABI);
+  const { contract: aavePoolContract } = useContract(AAVE_POOL_ADDRESS);
 
   const [tab, setTab] = useState<AAVELendingScreenOptions>(option || "BORROW");
   const tabs = useRef([
     "BORROW",
-    "DEPOSIT",
+    "SUPPLY",
     "WITHDRAW",
   ] as AAVELendingScreenOptions[]).current;
 
-  const { data: totalShares = BigNumber.from(0) } = useContractRead(
-    vaultContract,
-    "totalAssets"
-  );
-  const readableTotalShares = parseFloat(
-    formatUnits(totalShares.toString(), 18)
-  );
-  const { data: userBalance = BigNumber.from(0) } = useContractRead(
-    vaultContract,
-    "totalAssetsOfUser",
+  const {
+    data: userData = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)],
+    isLoading,
+  } = useContractRead(
+    aavePoolContract,
+    "getUserAccountData",
     [user?.address]
+    // ["0x0e07Ed3049FD6408AEB26049e76609e0491b3A49"]
   );
   const readableUserBalance = parseFloat(
-    formatUnits(userBalance.toString(), 18)
+    formatUnits(userData[0].toString(), 8)
   );
 
   const isPresented = router.canGoBack();
@@ -110,30 +107,30 @@ export default function AAVELendingModal({
         <Spacer h={24} />
         <SegmentSlider {...{ tabs, tab, setTab }} />
         {tab === "BORROW" && (
-          <VaultDeposit
+          <LendingBorrow
             balanceData={balanceData}
             balanceOfLoading={balanceOfLoading}
             refetchBalance={refetchBalance}
             ghoContract={ghoContract}
-            vaultContract={vaultContract}
+            aavePoolContract={aavePoolContract}
           />
         )}
-        {tab === "DEPOSIT" && (
-          <VaultDeposit
+        {tab === "SUPPLY" && (
+          <LendingSupply
             balanceData={balanceData}
             balanceOfLoading={balanceOfLoading}
             refetchBalance={refetchBalance}
             ghoContract={ghoContract}
-            vaultContract={vaultContract}
+            aavePoolContract={aavePoolContract}
           />
         )}
         {tab === "WITHDRAW" && (
-          <VaultWithdraw
+          <LendingWithdraw
             balanceData={balanceData}
             balanceOfLoading={balanceOfLoading}
             refetchBalance={refetchBalance}
             ghoContract={ghoContract}
-            vaultContract={vaultContract}
+            aavePoolContract={aavePoolContract}
           />
         )}
       </View>
