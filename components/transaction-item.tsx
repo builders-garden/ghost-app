@@ -25,7 +25,7 @@ export default function TransactionItem({
   const amount = parseFloat(transaction.amount);
   const isFrom = from === user?.address;
   return (
-    <>
+    <View key={`transaction-${index}`}>
       <View className="flex flex-row items-center justify-between py-4">
         <View className="flex flex-row items-center space-x-4">
           <Pressable
@@ -76,6 +76,6 @@ export default function TransactionItem({
         </View>
       </View>
       <Divider />
-    </>
+    </View>
   );
 }

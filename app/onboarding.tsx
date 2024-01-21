@@ -99,6 +99,10 @@ export default function Onboarding() {
       setCreationStatus("Setting USDC approval...");
       const { receipt: usdcReceipt } = await approveUSDC({
         args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
+        overrides: {
+          gasLimit: 69322 * 1.5,
+          maxFeePerGas: 4,
+        },
       });
       Toast.show({
         type: "success",
@@ -111,6 +115,10 @@ export default function Onboarding() {
       setCreationStatus("Setting USDT approval...");
       const { receipt: usdtReceipt } = await approveUSDT({
         args: [AAVE_POOL_ADDRESS, ethers.constants.MaxUint256],
+        overrides: {
+          gasLimit: 69322 * 1.5,
+          maxFeePerGas: 4,
+        },
       });
       Toast.show({
         type: "success",

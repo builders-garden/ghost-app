@@ -4,7 +4,7 @@ import {
   useContract,
   useContractRead,
 } from "@thirdweb-dev/react-native";
-import { Link, Redirect } from "expo-router";
+import { Link, Redirect, useNavigation } from "expo-router";
 import { SafeAreaView, View, Text, ImageBackground } from "react-native";
 import { ActivityIndicator, IconButton } from "react-native-paper";
 import Avatar from "../../../components/avatar";
@@ -27,6 +27,7 @@ export default function Home() {
   const [refreshing, setRefreshing] = React.useState(false);
   const user = useUserStore((state) => state.user);
   const { contract } = useContract(GHO_SEPOLIA_ADDRESS);
+
   const { data: balanceData = BigNumber.from(0), refetch: balanceRefetch } =
     useContractRead(contract, "balanceOf", [user?.address]);
   const transactions = useTransactionsStore((state) => state.transactions);
@@ -34,6 +35,8 @@ export default function Home() {
     (state) => state.setTransactions
   );
   const balance = (balanceData / 10 ** 18).toFixed(2);
+
+  const navigation = useNavigation();
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -53,7 +56,17 @@ export default function Home() {
   };
 
   React.useEffect(() => {
-    fetchTransactions();
+    // fetchTransactions();
+
+    const refresh = async () => {
+      await Promise.all([balanceRefetch(), fetchTransactions()]);
+    };
+
+    navigation.addListener("focus", refresh);
+
+    return () => {
+      navigation.removeListener("focus", refresh);
+    };
   }, []);
 
   const fetchTransactions = async () => {

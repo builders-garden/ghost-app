@@ -17,7 +17,6 @@ export default function Pocket() {
     isLoading,
     refetch,
   } = useContractRead(contract, "getUserAccountData", [user?.address]);
-  const navigation = useNavigation();
 
   const { contract: vaultContract } = useContract(VAULT_ADDRESS);
   const {
@@ -27,6 +26,7 @@ export default function Pocket() {
 
   const vaultBalance = parseFloat(formatUnits(userVaultBalance.toString(), 18));
   const aaveLendingBalance = parseFloat(formatUnits(userData[0], 8));
+  const navigation = useNavigation();
 
   useEffect(() => {
     const refresh = () => {

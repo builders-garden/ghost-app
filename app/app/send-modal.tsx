@@ -13,6 +13,7 @@ import {
 } from "@thirdweb-dev/react-native";
 import {
   AAVE_BORROW_ADDRESS,
+  GHOST_PORTAL_LOCK_ADDRESS,
   GHO_ASSET_PRICE,
   GHO_SEPOLIA_ADDRESS,
 } from "../../constants/sepolia";
@@ -27,6 +28,7 @@ import Avatar from "../../components/avatar";
 import { InfoBox } from "../../components/infobox";
 import Spacer from "../../components/spacer";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { BigNumber, ethers } from "ethers";
 
 const EXAMPLE_CROSS_CHAIN_ADDRESS =
   "0x1358155a15930f89eBc787a34Eb4ccfd9720bC62";
@@ -46,6 +48,15 @@ export default function SendModal() {
     "balanceOf",
     [user?.address]
   );
+  const { contract: ghostPortal } = useContract(GHOST_PORTAL_LOCK_ADDRESS);
+  const { data: allowanceData } = useContractRead(contract, "allowance", [
+    user?.address,
+    GHOST_PORTAL_LOCK_ADDRESS,
+  ]);
+  const { mutateAsync: approve, isLoading: isApproveLoading } =
+    useContractWrite(contract, "approve");
+  const { mutateAsync: sendCrossChain, isLoading: isSendCrossChainLoading } =
+    useContractWrite(ghostPortal, "sendCrossChain");
   const isCrossChain = sendUser?.username === "paolorollo";
   // const isCrossChain = sendUser?.chain !== user?.chain;
 
@@ -92,11 +103,19 @@ export default function SendModal() {
 
       if (isCrossChain) {
         // APPROVE
+        if (allowanceData.eq(0)) {
+          const { receipt } = await approve({
+            args: [GHOST_PORTAL_LOCK_ADDRESS, ethers.constants.MaxUint256],
+          });
+        }
         // SEND
-        const { receipt } = await transfer({
-          to: sendUser!.address,
-          amount,
+        const { receipt } = await sendCrossChain({
+          args: [
+            sendUser?.address,
+            BigNumber.from(amount).mul(BigNumber.from(10).pow(18)),
+          ],
         });
+
         const transaction = {
           txHash: receipt.transactionHash,
           blockNumber: receipt.blockNumber,
@@ -239,7 +258,10 @@ export default function SendModal() {
         )}
       </View>
       <SafeAreaView className="mt-auto">
-        {transferLoading || loading ? (
+        {transferLoading ||
+        isApproveLoading ||
+        isSendCrossChainLoading ||
+        loading ? (
           <ActivityIndicator animating={true} color={"#C9B3F9"} />
         ) : (
           <View className="flex flex-row justify-between">
