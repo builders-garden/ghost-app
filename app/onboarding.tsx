@@ -183,44 +183,48 @@ export default function Onboarding() {
         </View>
       )}
       {step === 1 && (
-        <View className="flex flex-col items-start px-4 justify-center space-y-2">
+        <View className="flex flex-col flex-grow px-4 justify-between mb-12">
           {/* <Text className="text-white font-semibold text-xl">
             Choose your preferences
           </Text> */}
-          <View className="w-full h-full">
-            <Text className="text-[#C9B3F9] font-semibold my-2">Username</Text>
-            <Text className="text-white mb-2">
-              Other users will be able to find you via this handle.
-            </Text>
-            <TextInput
-              value={username}
-              onChangeText={setUsername}
-              autoCapitalize="none"
-              autoComplete="off"
-              autoCorrect={false}
-              className="mb-2 text-white border-2 border-[#C9B3F9] px-2 py-3 rounded-md placeholder-white"
-            />
-            <View className="flex flex-row justify-between mt-2 mb-4">
-              <Text className="max-w-[300px] text-white">
-                Set aside the remainder of each received transaction rounded to
-                the nearest dollar (if you receive $1.30 set aside $0.30). This
-                option is enabled by default.
+          <View className="w-full">
+            <View>
+              <Text className="text-[#C9B3F9] font-semibold my-2">
+                Username
               </Text>
-              <Switch
-                trackColor={{ false: "black", true: "#C9B3F9" }}
-                thumbColor={"#201F2D"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
-                disabled
+              <Text className="text-white mb-2">
+                Other users will be able to find you via this name.
+              </Text>
+              <TextInput
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+                autoComplete="off"
+                autoCorrect={false}
+                className="mb-2 text-white border-2 border-[#C9B3F9] px-2 py-3 rounded-md placeholder-white"
               />
+              <View className="flex flex-row justify-between mt-8 mb-4">
+                <Text className="max-w-[300px] text-white">
+                  Set aside the remainder of each received transaction rounded
+                  to the nearest dollar (if you receive $1.30 set aside $0.30).
+                  This option is enabled by default.
+                </Text>
+                <Switch
+                  trackColor={{ false: "black", true: "#C9B3F9" }}
+                  thumbColor={"#201F2D"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={toggleSwitch}
+                  value={isEnabled}
+                  disabled
+                />
+              </View>
             </View>
-            <AppButton
-              text="Complete onboarding"
-              variant={username.length > 3 ? "primary" : "disabled"}
-              onPress={() => finishOnboarding()}
-            />
           </View>
+          <AppButton
+            text="Complete onboarding"
+            variant={username.length > 3 ? "primary" : "disabled"}
+            onPress={() => finishOnboarding()}
+          />
         </View>
       )}
       {step === 2 && (
