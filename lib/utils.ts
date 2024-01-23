@@ -26,3 +26,8 @@ export function amountToDollars(
 
   return `${dollars}.${cents}` as `${number}`;
 }
+
+export function toFixed(num: number, fixed: number = 2) {
+  const power = Math.pow(10, fixed);
+  return Math.floor(num * power) / power;
+}

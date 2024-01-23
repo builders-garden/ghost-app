@@ -28,6 +28,7 @@ import { InfoBox } from "../../components/infobox";
 import Spacer from "../../components/spacer";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { BigNumber, ethers } from "ethers";
+import { toFixed } from "../../lib/utils";
 
 const EXAMPLE_CROSS_CHAIN_ADDRESS =
   "0x1358155a15930f89eBc787a34Eb4ccfd9720bC62";
@@ -42,11 +43,11 @@ export default function SendModal() {
     useTransferToken(contract);
   const [amount, setAmount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { data: balanceData, isLoading: balanceOfLoading } = useContractRead(
-    contract,
-    "balanceOf",
-    [user?.address]
-  );
+  const {
+    data: balanceData,
+    isLoading: balanceOfLoading,
+    refetch: refetchBalance,
+  } = useContractRead(contract, "balanceOf", [user?.address]);
   const { contract: ghostPortal } = useContract(GHOST_PORTAL_LOCK_ADDRESS);
   const { data: allowanceData } = useContractRead(contract, "allowance", [
     user?.address,
@@ -62,9 +63,14 @@ export default function SendModal() {
   const sendUserChain = isCrossChain ? "Mumbai" : "Sepolia";
   // const sendUserChain = sendUser?.chain;
 
-  const balance = balanceData
-    ? parseFloat(formatUnits(balanceData, 18)).toFixed(2)
-    : (0).toFixed(2);
+  const balance = balanceData ? parseFloat(formatUnits(balanceData, 18)) : 0;
+
+  console.log({
+    balanceData,
+    balance,
+    float: parseFloat(formatUnits(balanceData, 18)).toFixed(2),
+    b: Number(balanceData),
+  });
   const { contract: aaveBorrowContract } = useContract(AAVE_BORROW_ADDRESS);
   const {
     data: userData = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)],
@@ -83,16 +89,11 @@ export default function SendModal() {
     parseFloat(formatUnits(userData[2], 8)) >= Number(amount) - Number(balance)
   );
 
-  // const canBorrow =
-  //   userData && userData[2]
-  //     ? parseFloat(userData[2].div(GHO_ASSET_PRICE).toString()) > 0
-  //     : false;
   const needToBorrow = Number(balance) < Number(amount);
   const canSend = Number(amount) <= Number(balance) && Number(amount) > 0;
-  console.log(formatUnits(userData[2], 8));
-  console.log(amount);
   useEffect(() => {
     if (needToBorrow) {
+      3;
       setCanBorrow(
         parseFloat(formatUnits(userData[2], 8)) >=
           Number(amount) - Number(balance)
@@ -105,6 +106,7 @@ export default function SendModal() {
     setLoading(true);
     try {
       if (needToBorrow && canBorrow) {
+        console.log("Borrowing...");
         await borrow({
           args: [
             GHO_SEPOLIA_ADDRESS,
@@ -114,6 +116,8 @@ export default function SendModal() {
             user?.address,
           ],
         });
+        console.log("Borrowed!");
+        refetchBalance();
       }
 
       if (isCrossChain) {
@@ -146,6 +150,8 @@ export default function SendModal() {
           transaction
         );
       } else {
+        console.log("Sending...");
+        console.log({ balanceData });
         const { receipt } = await transfer({
           to: sendUser!.address,
           amount,
@@ -165,6 +171,7 @@ export default function SendModal() {
           doc(firebaseFirestore, "transactions", receipt.transactionHash),
           transaction
         );
+        console.log("Sent!");
       }
 
       Toast.show({
@@ -235,7 +242,7 @@ export default function SendModal() {
           <ActivityIndicator animating={true} color={"#C9B3F9"} />
         ) : (
           <Text className="text-[#53516C] font-semibold">
-            ${balance} available
+            ${toFixed(balance,2)} available
           </Text>
         )}
         {isCrossChain && (
