@@ -4,7 +4,7 @@ import {
   smartWallet,
 } from "@thirdweb-dev/react-native";
 import { Slot } from "expo-router";
-import { View } from "react-native";
+import { LogBox, View } from "react-native";
 import { sepolia } from "../constants/sepolia";
 import { PaperProvider } from "react-native-paper";
 import Toast, {
@@ -15,6 +15,8 @@ import Toast, {
 } from "react-native-toast-message";
 //@ts-ignore
 import Icon from "react-native-vector-icons/FontAwesome";
+
+LogBox.ignoreLogs([new RegExp("TypeError:.*")]);
 
 const toastConfig: ToastConfig = {
   success: (props) => (

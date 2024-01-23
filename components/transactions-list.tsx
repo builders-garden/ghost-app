@@ -61,7 +61,11 @@ export default function TransactionsList({
       {transactions.length > 0 && (
         <ScrollView className="h-full">
           {transactions.map((transaction, index) => (
-            <TransactionItem transaction={transaction} index={index} />
+            <TransactionItem
+              transaction={transaction}
+              index={index}
+              key={`transaction-parent-${index}`}
+            />
           ))}
         </ScrollView>
       )}

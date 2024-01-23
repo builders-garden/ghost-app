@@ -3,7 +3,7 @@ import { Link, router } from "expo-router";
 import { ActivityIndicator, Appbar } from "react-native-paper";
 import { Text } from "react-native";
 import { useSendStore, useUserStore } from "../../store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   shortenAddress,
   useContract,
@@ -14,7 +14,6 @@ import {
 import {
   AAVE_BORROW_ADDRESS,
   GHOST_PORTAL_LOCK_ADDRESS,
-  GHO_ASSET_PRICE,
   GHO_SEPOLIA_ADDRESS,
 } from "../../constants/sepolia";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -67,7 +66,10 @@ export default function SendModal() {
     ? parseFloat(formatUnits(balanceData, 18)).toFixed(2)
     : (0).toFixed(2);
   const { contract: aaveBorrowContract } = useContract(AAVE_BORROW_ADDRESS);
-  const { data: userData, isLoading } = useContractRead(
+  const {
+    data: userData = [BigNumber.from(0), BigNumber.from(0), BigNumber.from(0)],
+    isLoading,
+  } = useContractRead(
     aaveBorrowContract,
     "getUserAccountData",
     [user?.address]
@@ -77,13 +79,26 @@ export default function SendModal() {
     aaveBorrowContract,
     "borrow"
   );
+  const [canBorrow, setCanBorrow] = useState(
+    parseFloat(formatUnits(userData[2], 8)) >= Number(amount) - Number(balance)
+  );
 
-  const canBorrow =
-    userData && userData[2]
-      ? parseFloat(userData[2].div(GHO_ASSET_PRICE).toString()) > 0
-      : false;
+  // const canBorrow =
+  //   userData && userData[2]
+  //     ? parseFloat(userData[2].div(GHO_ASSET_PRICE).toString()) > 0
+  //     : false;
   const needToBorrow = Number(balance) < Number(amount);
   const canSend = Number(amount) <= Number(balance) && Number(amount) > 0;
+  console.log(formatUnits(userData[2], 8));
+  console.log(amount);
+  useEffect(() => {
+    if (needToBorrow) {
+      setCanBorrow(
+        parseFloat(formatUnits(userData[2], 8)) >=
+          Number(amount) - Number(balance)
+      );
+    }
+  }, [amount]);
 
   const sendTokens = async () => {
     if (transferLoading || loading || !sendUser) return;
@@ -93,7 +108,7 @@ export default function SendModal() {
         await borrow({
           args: [
             GHO_SEPOLIA_ADDRESS,
-            formatUnits(amount, 18),
+            BigNumber.from(`${(Number(amount) - Number(balance)) * 10 ** 18}`),
             2,
             0,
             user?.address,
@@ -239,18 +254,18 @@ export default function SendModal() {
             {canBorrow && (
               <InfoBox
                 title="Insufficient balance, but..."
-                subtitle={`You can still borrow ${
+                subtitle={`You can still borrow $${(
                   Number(amount) - Number(balance)
-                } GHO and proceed with the transaction.`}
+                ).toFixed(2)} and proceed with the transaction.`}
                 variant="info"
               ></InfoBox>
             )}
             {!canBorrow && (
               <InfoBox
                 title="Insufficient balance, and..."
-                subtitle={`You don't have enough collateral to borrow ${
+                subtitle={`You don't have enough collateral to borrow $${(
                   Number(amount) - Number(balance)
-                } GHO and proceed with the transaction.`}
+                ).toFixed(2)} and proceed with the transaction.`}
                 variant="warning"
               ></InfoBox>
             )}
