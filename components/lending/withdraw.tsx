@@ -145,8 +145,8 @@ export default function LendingWithdraw({
   return (
     <View className="flex flex-col">
       <Text className="text-white mt-4 mb-4">
-        This is the % of GHO in the vault that you will withdraw. 100% will
-        withdraw all of your GHO.
+        This is the % of tokens in the pool that you will withdraw. 100% will
+        withdraw everything from the pool.
       </Text>
       <View className="mb-2 text-white px-2 py-3 rounded-md flex flex-row items-center justify-between">
         <Slider
