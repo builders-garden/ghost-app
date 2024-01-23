@@ -65,12 +65,9 @@ export default function LendingSupply({
     "swapExactTokensForTokens"
   );
 
-  const balance = parseFloat(
-    formatUnits(balanceData.toString() as any, 18)
-  ).toFixed(2);
+  const balance = parseFloat(formatUnits(balanceData.toString() as any, 18));
 
-  const canSupply =
-    supplyAmount && supplyAmount > 0 && parseFloat(balance) >= supplyAmount;
+  const canSupply = supplyAmount && supplyAmount > 0 && balance >= supplyAmount;
   const executeSupply = async () => {
     try {
       const supplyAmountInWei = BigNumber.from(supplyAmount).mul(
@@ -147,7 +144,7 @@ export default function LendingSupply({
         <ActivityIndicator animating={true} color={"#C9B3F9"} />
       ) : (
         <Text className="text-[#53516C] font-semibold text-center">
-          ${balance} available
+          ${balance.toFixed(2)} available
         </Text>
       )}
       <View className="mt-8 w-full">

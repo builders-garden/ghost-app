@@ -32,7 +32,7 @@ export default function VaultModal({
     isLoading: balanceOfLoading,
     refetch: refetchBalance,
   } = useContractRead(ghoContract, "balanceOf", [user?.address]);
-  const balance = (balanceData / 10 ** 18).toFixed(2);
+  const balance = balanceData / 10 ** 18;
   const { contract: vaultContract } = useContract(VAULT_ADDRESS, VAULT_ABI);
 
   const [tab, setTab] = useState<VaultScreenOptions>(option || "DEPOSIT");
@@ -92,7 +92,7 @@ export default function VaultModal({
           <View className="flex flex-col space-y-1 items-center w-48">
             <Text className="text-[#53516C] font-semibold">Balance</Text>
             <Text className="text-white text-2xl font-bold text-center">
-              ${balance}
+              ${balance.toFixed(2)}
             </Text>
           </View>
           <View className="flex flex-col space-y-1 items-center text-center w-48">

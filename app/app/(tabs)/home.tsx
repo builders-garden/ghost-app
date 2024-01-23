@@ -34,7 +34,7 @@ export default function Home() {
   const setTransactions = useTransactionsStore(
     (state) => state.setTransactions
   );
-  const balance = (balanceData / 10 ** 18).toFixed(2);
+  const balance = balanceData / 10 ** 18;
 
   const navigation = useNavigation();
 
@@ -151,7 +151,7 @@ export default function Home() {
               Your balance
             </Text>
             <Text className="text-white font-bold text-center text-5xl">
-              ${balance}
+              ${balance.toFixed(2)}
             </Text>
             <View className="flex flex-row justify-evenly items-center">
               <CircularButton
