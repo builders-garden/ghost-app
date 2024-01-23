@@ -105,11 +105,6 @@ export default function SendModal() {
     setLoading(true);
     try {
       if (needToBorrow && canBorrow) {
-        const borrowAmount = Number(amount) - Number(balance);
-        console.log(borrowAmount);
-        const borrowAmountInWei = BigNumber.from(borrowAmount).mul(
-          BigNumber.from(10).pow(18)
-        );
         await borrow({
           args: [
             GHO_SEPOLIA_ADDRESS,
