@@ -242,7 +242,7 @@ export default function SendModal() {
           <ActivityIndicator animating={true} color={"#C9B3F9"} />
         ) : (
           <Text className="text-[#53516C] font-semibold">
-            ${toFixed(balance,2)} available
+            ${balance.toFixed(2)} available
           </Text>
         )}
         {isCrossChain && (
