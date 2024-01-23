@@ -40,7 +40,7 @@ export default function SendModal() {
   const user = useUserStore((state) => state.user);
   const { contract } = useContract(GHO_SEPOLIA_ADDRESS);
   const { mutateAsync: transfer, isLoading: transferLoading } =
-    useTransferToken(contract);
+    useContractWrite(contract, "transfer");
   const [amount, setAmount] = useState(0);
   const [loading, setLoading] = useState(false);
   const {
@@ -153,8 +153,12 @@ export default function SendModal() {
         console.log("Sending...");
         console.log({ balanceData });
         const { receipt } = await transfer({
-          to: sendUser!.address,
-          amount,
+          args: [
+            sendUser!.address,
+            needToBorrow && canBorrow
+              ? balanceData
+              : BigNumber.from(amount).mul(BigNumber.from(10).pow(18)),
+          ],
         });
 
         const transaction = {
